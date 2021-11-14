@@ -36,9 +36,9 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Hex": "res://addons/hexgrid/Tile.png",
-"HexBoard": "",
-"Piece": "",
-"Tile": "",
+"HexBoard": "res://addons/hexgrid/HexMap.png",
+"Piece": "res://addons/hexgrid/Piece.png",
+"Tile": "res://addons/hexgrid/Tile.png",
 "Unit": "res://addons/hexgrid/Piece.png"
 }
 
