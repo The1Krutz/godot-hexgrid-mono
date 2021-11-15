@@ -28,9 +28,10 @@ namespace MonoHexGrid {
       on_map = true;
 
       foreach (var t in o) {
-        Sprite s = new Sprite();
-        s.Texture = GD.Load<Texture>(t);
-        s.Visible = false;
+        Sprite s = new Sprite {
+          Texture = GD.Load<Texture>(t),
+          Visible = false
+        };
         AddChild(s);
       }
       Visible = false;
