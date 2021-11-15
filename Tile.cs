@@ -43,10 +43,12 @@ namespace MonoHexGrid {
     public abstract bool has_road(int orientation);
 
     /// <summary>
-    ///  is the line of sight blocked from a Tile to another, d beeing the distance between from and
+    /// is the line of sight blocked from a Tile to another, d beeing the distance between from and
 		/// to, dt beeing the distance between from and this Tile
     /// </summary>
-		public abstract bool block_los(MonoTile from, MonoTile to, float d, float dt);
+		public virtual bool block_los(MonoTile from, MonoTile to, float d, float dt){
+      return false;
+    }
 
     /// <summary>
     /// 
