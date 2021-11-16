@@ -8,7 +8,7 @@ namespace MonoHexGrid {
   }
 
   public class HexBoard : Node {
-    public const int IMAX = 999999999;
+    public const int IMAX = int.MaxValue;
     public const int DEGREE_ADJ = 2;
 
     public Vector2 bt; // bottom corner
