@@ -23,14 +23,14 @@ namespace Demo {
     public Sprite drag;
     public MonoHexBoard board;
     public Vector2 prev;
-    public Dictionary<int, MonoTile> hexes;
+    public Dictionary<int, MonoTile> hexes = new Dictionary<int, MonoTile>();
     public int hex_rotation;
     private Vector2 p0;
     private Vector2 p1;
-    public List<Hex> los;
-    public List<Hex> move;
-    public List<Hex> shoort;
-    public List<Hex> influence;
+    public List<Hex> los = new List<Hex>();
+    public List<Hex> move = new List<Hex>();
+    public List<Hex> shoort = new List<Hex>();
+    public List<Hex> influence = new List<Hex>();
     public Unit unit;
     public bool show_los;
     public bool show_move;
@@ -43,15 +43,15 @@ namespace Demo {
     private Los Los;
 
     public override void _Ready() {
-      drag = null;
-      unit = new Unit();
-      rotate_map();
-
       // $etc
       Tank = GetNode<Sprite>("Tank");
       Target = GetNode<Sprite>("Target");
       Hexes = GetNode<Node>("Hexes");
       Los = GetNode<Los>("Los");
+
+      drag = null;
+      unit = new Unit();
+      rotate_map();
     }
 
     public void reset() {

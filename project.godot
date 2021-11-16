@@ -60,3 +60,4 @@ enabled=PoolStringArray( "res://addons/gd2cs.py-9dbce4fd8e96dd55d183fc407b237dc1
 [gd2cs]
 
 config/ask_no_python=true
+config/python="python3"

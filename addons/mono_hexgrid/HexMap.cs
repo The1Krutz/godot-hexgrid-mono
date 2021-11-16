@@ -35,10 +35,10 @@ namespace MonoHexGrid {
     public int tl; // num of hexes in 2 consecutives rows
 
     public FuncRef tile_factory_fct;
-    public Dictionary<int, int> angles;
-    public List<MonoTile> adjacents;
+    public Dictionary<int, int> angles = new Dictionary<int, int>();
+    public List<MonoTile> adjacents = new List<MonoTile>();
     public int search_count;
-    public List<MonoTile> stack;
+    public List<MonoTile> stack = new List<MonoTile>();
 
     /// <summary>
     ///
