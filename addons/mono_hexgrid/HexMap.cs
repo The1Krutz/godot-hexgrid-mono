@@ -16,7 +16,7 @@ namespace MonoHexGrid {
   /// <summary>
   ///
   /// </summary>
-  public abstract class MonoHexBoard : Node {
+  public class MonoHexBoard : Node {
     public const int IMAX = 999999999;
     public const int DEGREE_ADJ = 2;
 
@@ -43,7 +43,7 @@ namespace MonoHexGrid {
     /// <summary>
     ///
     /// </summary>
-    public void _init(int cols, int rows, float side, Vector2 v0, bool vertical, FuncRef fct) {
+    public MonoHexBoard(int cols, int rows, float side, Vector2 v0, bool vertical, FuncRef fct) {
       tile_factory_fct = fct;
       v = vertical;
       s = side;

@@ -52,3 +52,11 @@ config/icon="res://icon.png"
 
 window/size/width=1920
 window/size/height=1080
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/gd2cs.py-9dbce4fd8e96dd55d183fc407b237dc108e0c7be/plugin.cfg" )
+
+[gd2cs]
+
+config/ask_no_python=true

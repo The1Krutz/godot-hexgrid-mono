@@ -1,65 +1,89 @@
-// #warning-ignore-all:return_value_discarded
-// extends Node2D
+using Godot;
+using Array = Godot.Collections.Array;
 
-// var moved : int = 0
-// var drag_map : bool = false
+namespace Demo {
+  public class Main : Node2D {
+    public int moved;
+    public bool drag_map;
 
-// onready var UI : Control = $CanvasLayer/HBOX/UI
-// onready var Map : Sprite = $CanvasLayer/HBOX/ViewportContainer/Viewport/Map
-// onready var Camera : Camera2D = $CanvasLayer/HBOX/ViewportContainer/Viewport/Camera
+    Control _ui;
+    Map _map;
+    Camera _camera;
+    Viewport _viewport;
+    ViewportContainer _viewportcontainer;
 
-// func _ready():
-// 	UI.get_node("rotate").connect("pressed", self, "on_rotate")
-// 	UI.get_node("zin").connect("pressed", self, "on_zoom", [true])
-// 	UI.get_node("zout").connect("pressed", self, "on_zoom", [false])
-// 	UI.get_node("LOS").connect("pressed", self, "on_toggle")
-// 	UI.get_node("Move").connect("pressed", self, "on_toggle")
-// 	UI.get_node("Influence").connect("pressed", self, "on_toggle")
-// 	Map.connect("hex_touched", self, "on_hex_touched")
-// 	$CanvasLayer/HBOX/ViewportContainer.connect("resized", self, "on_viewport_resized")
-// 	on_toggle()
-// 	yield(get_tree().create_timer(.2), 'timeout')
-// 	on_viewport_resized()
-// 	UI.get_node("OSInfo").text = "screen\n%s\ndpi %d" % [OS.get_screen_size(), OS.get_screen_dpi()]
+    public override async void _Ready() {
+      _ui = GetNode<Control>("CanvasLayer/HBOX/UI");
+      _map = GetNode<Map>("CanvasLayer/HBOX/ViewportContainer/Viewport/Map");
+      _camera = GetNode<Camera>("CanvasLayer/HBOX/ViewportContainer/Viewport/Camera");
+      _viewport = GetNode<Viewport>("CanvasLayer/HBOX/ViewportContainer/Viewport");
+      _viewportcontainer = GetNode<ViewportContainer>("CanvasLayer/HBOX/ViewportContainer");
 
-// func on_viewport_resized() -> void:
-// 	Camera.configure($CanvasLayer/HBOX/ViewportContainer/Viewport.size, Map.center(), Map.texture_size())
+      _ui.GetNode<Button>("rotate").Connect("pressed", this, "on_rotate");
+      _ui.GetNode<Button>("zin").Connect("pressed", this, "on_zoom", new Array() { true });
+      _ui.GetNode<Button>("zout").Connect("pressed", this, "on_zoom", new Array() { false });
+      _ui.GetNode<CheckBox>("LOS").Connect("pressed", this, "on_toggle");
+      _ui.GetNode<CheckBox>("Move").Connect("pressed", this, "on_toggle");
+      _ui.GetNode<CheckBox>("Influence").Connect("pressed", this, "on_toggle");
+      _map.Connect("hex_touched", this, "on_hex_touched");
+      _viewportcontainer.Connect("resized", this, "on_viewport_resized");
+      on_toggle();
+      await ToSignal(GetTree().CreateTimer(0.2f), "timeout");
+      on_viewport_resized();
+      _ui.GetNode<Label>("OSInfo").Text = $"screen\n{OS.GetScreenSize()}\ndpi {OS.GetScreenDpi()}";
+    }
 
-// func on_rotate() -> void:
-// 	Map.rotate_map()
-// 	on_viewport_resized()
+    public void on_viewport_resized() {
+      _camera.configure(_viewport.Size, _map.center(), _map.texture_size());
+    }
 
-// func on_zoom(b : bool) -> void:
-// 	Camera.update_camera(0, 0, -0.05 if b else 0.05)
+    public void on_rotate() {
+      _map.rotate_map();
+      on_viewport_resized();
+    }
 
-// func on_toggle() -> void:
-// 	Map.set_mode(UI.get_node("LOS").pressed, UI.get_node("Move").pressed, UI.get_node("Influence").pressed)
+    public void on_zoom(bool b) {
+      _camera.update_camera(0, 0, b ? -0.05f : 0.05f);
+    }
 
-// func on_hex_touched(pos : Vector2, hex : Hex, key : int) -> void:
-// 	var s : String = ("offmap" if key == -1 else hex.inspect())
-// 	UI.get_node("Info").set_text("\n(%d;%d)\n -> %s\n -> %d" % [int(pos.x), int(pos.y), s, key])
+    public void on_toggle() {
+      _map.set_mode(_ui.GetNode<CheckBox>("LOS").Pressed, _ui.GetNode<CheckBox>("Move").Pressed, _ui.GetNode<CheckBox>("Influence").Pressed);
+    }
 
-// func _unhandled_input(event : InputEvent) -> void:
-// 	if event is InputEventMouseMotion:
-// 		if drag_map:
-// 			var dv : Vector2 = event.relative * Camera.zoom
-// 			Camera.update_camera(-dv.x, -dv.y, 0)
-// 			moved += 1
-// 		else:
-// 			Map.on_mouse_move()
-// 	elif event is InputEventMouseButton:
-// 		if event.button_index == 1:
-// 			if moved < 5:
-// 				drag_map = Map.on_click(event.pressed)
-// 			else:
-// 				drag_map = false
-// 			moved = 0
-// 		elif event.button_index == 3:
-// 			drag_map = event.pressed
-// 		elif event.button_index == 4:
-// 			on_zoom(true)
-// 		elif event.button_index == 5:
-// 			on_zoom(false)
-// 	elif event is InputEventKey:
-// 		if event.scancode == KEY_ESCAPE:
-// 			get_tree().quit()
+    public void on_hex_touched(Vector2 pos, Hex hex, int key) {
+      string s = key == -1 ? "offmap" : hex.inspect();
+      _ui.GetNode<Label>("Info").Text = $"\n({pos.x};{pos.y})\n -> {s}\n -> {key}";
+    }
+
+    public override void _UnhandledInput(InputEvent @event) {
+      if (@event is InputEventMouseMotion _mme) {
+        if (drag_map) {
+          Vector2 dv = _mme.Relative * _camera.Zoom;
+          _camera.update_camera(-dv.x, -dv.y, 0);
+          moved++;
+        } else {
+          _map.on_mouse_move();
+        }
+      } else if (@event is InputEventMouseButton _mbe) {
+        if (_mbe.ButtonIndex == 1) {
+          if (moved < 5) {
+            drag_map = _map.on_click(_mbe.Pressed);
+          } else {
+            drag_map = false;
+          }
+          moved = 0;
+        } else if (_mbe.ButtonIndex == 3) {
+          drag_map = _mbe.Pressed;
+        } else if (_mbe.ButtonIndex == 4) {
+          on_zoom(true);
+        } else if (_mbe.ButtonIndex == 5) {
+          on_zoom(false);
+        }
+      } else if (@event is InputEventKey _ke) {
+        if (_ke.Scancode == (int)KeyList.Escape) {
+          GetTree().Quit();
+        }
+      }
+    }
+  }
+}
