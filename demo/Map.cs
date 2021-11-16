@@ -28,10 +28,10 @@ namespace Demo {
     public int hex_rotation;
     private Vector2 p0;
     private Vector2 p1;
-    public List<Hex> los = new List<Hex>();
-    public List<Hex> move = new List<Hex>();
-    public List<Hex> shoort = new List<Hex>();
-    public List<Hex> influence = new List<Hex>();
+    public List<Tile> los = new List<Tile>();
+    public List<Tile> move = new List<Tile>();
+    public List<Tile> shoort = new List<Tile>();
+    public List<Tile> influence = new List<Tile>();
     public Unit unit;
     public bool show_los;
     public bool show_move;
@@ -210,39 +210,39 @@ namespace Demo {
 
     public void compute() {
       _los.Visible = false;
-      foreach (var hex in los) {
+      foreach (Hex hex in los) {
         hex.show_los(false);
       }
       if (show_los) {
         _los.Visible = true;
-        Vector2 ct = board.line_of_sight(p0, p1, los.Cast<Tile>().ToList());
+        Vector2 ct = board.line_of_sight(p0, p1, los);
         _los.setup(_tank.Position, _target.Position, ct);
-        foreach (var hex in los) {
+        foreach (Hex hex in los) {
           hex.show_los(true);
         }
       }
-      foreach (var hex in move) {
+      foreach (Hex hex in move) {
         hex.show_move(false);
       }
-      foreach (var hex in shoort) {
+      foreach (Hex hex in shoort) {
         hex.show_short(false);
       }
       if (show_move) {
-        board.possible_moves(unit, board.get_tile(p0), move.Cast<Tile>().ToList());
-        board.shortest_path(unit, board.get_tile(p0), board.get_tile(p1), shoort.Cast<Tile>().ToList());
-        foreach (var hex in move) {
+        board.possible_moves(unit, board.get_tile(p0), move);
+        board.shortest_path(unit, board.get_tile(p0), board.get_tile(p1), shoort);
+        foreach (Hex hex in move) {
           hex.show_move(true);
         }
-        foreach (var i in GD.Range(1, shoort.Count - 1)) {
-          shoort[i].show_short(true);
+        foreach (Hex hex in shoort) {
+          hex.show_short(true);
         }
       }
-      foreach (var hex in influence) {
+      foreach (Hex hex in influence) {
         hex.show_influence(false);
       }
       if (show_influence) {
-        board.range_of_influence(unit, board.get_tile(p0), 0, influence.Cast<Tile>().ToList());
-        foreach (var hex in influence) {
+        board.range_of_influence(unit, board.get_tile(p0), 0, influence);
+        foreach (Hex hex in influence) {
           hex.show_influence(true);
         }
       }

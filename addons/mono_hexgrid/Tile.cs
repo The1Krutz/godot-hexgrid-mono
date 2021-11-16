@@ -13,9 +13,9 @@ namespace MonoHexGrid {
     public bool road_march;
     public int search_count;
 
-    public void configure(Vector2 position, Vector2 coordinates, List<string> o) {
-      Position = position;
-      coords = coordinates;
+    public void configure(Vector2 p, Vector2 c, List<string> o) {
+      Position = p;
+      coords = c;
       on_map = true;
 
       foreach (var t in o) {
