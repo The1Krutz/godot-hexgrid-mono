@@ -1,8 +1,9 @@
+using System;
 using Godot;
 using MonoHexGrid;
 
 namespace Demo {
-  public class Hex : MonoTile {
+  public class Hex : Tile {
     public int type = -1;
     public int roads = 0;
 
@@ -28,7 +29,15 @@ namespace Demo {
       return (orientation & roads) > 0;
     }
 
-    public bool block_los(Hex from, Hex to, float d, float dt) {
+    public override bool block_los(Tile from, Tile to, float d, float dt) {
+      if (from is Hex fromhex && to is Hex tohex) {
+        return block_los(fromhex, tohex, d, dt);
+      }
+
+      throw new ArgumentException("Somehow ended up with the wrong type of Tiles!");
+    }
+
+    private bool block_los(Hex from, Hex to, float d, float dt) {
       int h = height() + elevation();
       if (h == 0) {
         return false;

@@ -2,21 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
-/// <summary>
-///
-/// </summary>
 namespace MonoHexGrid {
-  /// <summary>
-  ///
-  /// </summary>
   public enum Orientation {
     E = 1, NE = 2, N = 4, NW = 8, W = 16, SW = 32, S = 64, SE = 128
   }
 
-  /// <summary>
-  ///
-  /// </summary>
-  public class MonoHexBoard : Node {
+  public class HexBoard : Node {
     public const int IMAX = 999999999;
     public const int DEGREE_ADJ = 2;
 
@@ -36,14 +27,11 @@ namespace MonoHexGrid {
 
     public FuncRef tile_factory_fct;
     public Dictionary<int, int> angles = new Dictionary<int, int>();
-    public List<MonoTile> adjacents = new List<MonoTile>();
+    public List<Tile> adjacents = new List<Tile>();
     public int search_count;
-    public List<MonoTile> stack = new List<MonoTile>();
+    public List<Tile> stack = new List<Tile>();
 
-    /// <summary>
-    ///
-    /// </summary>
-    public MonoHexBoard(int cols, int rows, float side, Vector2 v0, bool vertical, FuncRef fct) {
+    public HexBoard(int cols, int rows, float side, Vector2 v0, bool vertical, FuncRef fct) {
       tile_factory_fct = fct;
       v = vertical;
       s = side;
@@ -90,8 +78,8 @@ namespace MonoHexGrid {
     /// <summary>
     /// fetch a Tile given it's col;row coordinates
     /// </summary>
-    public MonoTile get_tile(Vector2 coords) {
-      return (MonoTile)tile_factory_fct.CallFunc(coords, key(coords));
+    public Tile get_tile(Vector2 coords) {
+      return (Tile)tile_factory_fct.CallFunc(coords, key(coords));
     }
 
     /// <summary>
@@ -116,7 +104,7 @@ namespace MonoHexGrid {
     /// <summary>
     /// compute the angle between 2 adjacent Tiles
     /// </summary>
-    public int angle(MonoTile from, MonoTile to) {
+    public int angle(Tile from, Tile to) {
       float a = Mathf.Rad2Deg((to.Position - from.Position).Angle()) + DEGREE_ADJ;
       if (a < 0) {
         a += 360;
@@ -136,13 +124,12 @@ namespace MonoHexGrid {
     /// return the Orientation given to distant Tiles
     /// Orientation is combined in case of diagonals
     /// </summary>
-    public int distant_orientation(MonoTile from, MonoTile to) {
+    public int distant_orientation(Tile from, Tile to) {
       float a = Mathf.Rad2Deg((to.Position - from.Position).Angle());
       if (a < 0) {
         a += 360;
       }
       a = (int)(a * 10) / 10.0f;
-      // TODO - see if it makes sense to use the angle function above for this /\
 
       foreach (int k in angles.Keys) {
         int z = angles[k];
@@ -192,9 +179,6 @@ namespace MonoHexGrid {
       }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     public int _key(int x, int y) {
       int n = y / 2;
       int i = x - n + (n * tl);
@@ -207,9 +191,9 @@ namespace MonoHexGrid {
     /// <summary>
     /// build the 6 adjacent Tiles of a Tile given by it's col;row coordinates
     /// </summary>
-    public void adjacents_of(MonoTile tile, List<MonoTile> tiles) {
+    public void adjacents_of(Tile tile, List<Tile> tiles) {
       tiles.Clear();
-      foreach (MonoTile t in _build_adjacents(tile.coords)) {
+      foreach (Tile t in _build_adjacents(tile.coords)) {
         tiles.Add(t);
       }
     }
@@ -217,7 +201,7 @@ namespace MonoHexGrid {
     /// <summary>
     /// build the 6 adjacent Tiles of a Tile given by it's col;row coordinates
     /// </summary>
-    public List<MonoTile> _build_adjacents(Vector2 coords) {
+    private List<Tile> _build_adjacents(Vector2 coords) {
       adjacents.Clear();
       coords.x++;
       adjacents.Add(get_tile(coords));
@@ -246,10 +230,7 @@ namespace MonoHexGrid {
       }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public bool _is_on_map(int x, int y) {
+    private bool _is_on_map(int x, int y) {
       if ((y < 0) || (y >= (int)(cr.y))) {
         return false;
       }
@@ -281,10 +262,7 @@ namespace MonoHexGrid {
       }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public Vector2 _to_map(float x, float y, bool swap) {
+    private Vector2 _to_map(float x, float y, bool swap) {
       // compute row
       float dy = y - bt.y;
       int row = (int)(dy / h);
@@ -359,7 +337,7 @@ namespace MonoHexGrid {
     /// compute as an List, the line of sight between 2 Tiles given by their col;row coordinates
     /// return the point after which the line of sight is blocked
     /// </summary>
-    public Vector2 line_of_sight(Vector2 p0, Vector2 p1, List<MonoTile> tiles) {
+    public Vector2 line_of_sight(Vector2 p0, Vector2 p1, List<Tile> tiles) {
       tiles.Clear();
       // orthogonal projection
       float ox0 = p0.x - ((p0.y + 1) / 2);
@@ -391,8 +369,8 @@ namespace MonoHexGrid {
       int x = (int)(p0.x);
       int y = (int)(p0.y);
       int e = (int)(-2 * dx);
-      MonoTile from = get_tile(p0);
-      MonoTile to = get_tile(p1);
+      Tile from = get_tile(p0);
+      Tile to = get_tile(p1);
       float d = distance(p0, p1);
       tiles.Add(from);
       from.blocked = false;
@@ -424,9 +402,9 @@ namespace MonoHexGrid {
           }
         }
         Vector2 q = new Vector2(x, y);
-        MonoTile t = get_tile(q);
+        Tile t = get_tile(q);
         if (los_blocked && !contact) {
-          MonoTile prev = tiles[^1];
+          Tile prev = tiles[^1];
           int o = to_orientation(angle(prev, t));
           ret = _compute_contact(from.Position, to.Position, prev.Position, o);
           contact = true;
@@ -438,16 +416,13 @@ namespace MonoHexGrid {
       return ret;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public Vector2 _diagonal_los(Vector2 p0, Vector2 p1, bool flat, bool q13, List<MonoTile> tiles) {
+    private Vector2 _diagonal_los(Vector2 p0, Vector2 p1, bool flat, bool q13, List<Tile> tiles) {
       int dy = (p1.y > p0.y) ? 1 : -1;
       int dx = (p1.x > p0.x) ? 1 : -1;
       int x = (int)(p0.x);
       int y = (int)(p0.y);
-      MonoTile from = get_tile(p0);
-      MonoTile to = get_tile(p1);
+      Tile from = get_tile(p0);
+      Tile to = get_tile(p1);
       float d = distance(p0, p1);
       tiles.Add(from);
       from.blocked = false;
@@ -463,7 +438,7 @@ namespace MonoHexGrid {
           x += dx; // right
         }
         Vector2 q = new Vector2(x, y);
-        MonoTile t = get_tile(q);
+        Tile t = get_tile(q);
         if (t.on_map) {
           tiles.Add(t);
           t.blocked = los_blocked;
@@ -515,10 +490,7 @@ namespace MonoHexGrid {
       return ret;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int _compute_orientation(int dx, int dy, bool flat) {
+    private int _compute_orientation(int dx, int dy, bool flat) {
       if (flat) {
         if (v) {
           return (dy == 1) ? (int)Orientation.S : (int)Orientation.N;
@@ -541,10 +513,7 @@ namespace MonoHexGrid {
       }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public Vector2 _compute_contact(Vector2 from, Vector2 to, Vector2 t, int o) {
+    private Vector2 _compute_contact(Vector2 from, Vector2 to, Vector2 t, int o) {
       float dx = to.x - from.x;
       float dy = to.y - from.y;
       float n = (dx == 0) ? (float)(IMAX) : (dy / dx);
@@ -600,7 +569,7 @@ namespace MonoHexGrid {
     /// compute as an List, the Tiles that can be reached by a given Piece from a Tile given by it's col;row coordinates
     /// return the size of the built List
     /// </summary>
-    public int possible_moves(MonoPiece piece, MonoTile from, List<MonoTile> tiles) {
+    public int possible_moves(Piece piece, Tile from, List<Tile> tiles) {
       tiles.Clear();
       if (piece.get_mp() <= 0 || !is_on_map(from.coords)) {
         return 0;
@@ -613,13 +582,13 @@ namespace MonoHexGrid {
       from.road_march = road_march_bonus > 0;
       stack.Add(from);
       while (stack.Count > 0) {
-        MonoTile src = stack.Last();
+        Tile src = stack.Last();
         stack.RemoveAt(stack.Count - 1); // note: I added this
         if ((src.acc + ((src.road_march) ? road_march_bonus : 0)) <= 0) {
           continue;
         }
         _build_adjacents(src.coords);
-        foreach (MonoTile dst in adjacents) {
+        foreach (Tile dst in adjacents) {
           if (!dst.on_map) {
             continue;
           }
@@ -652,10 +621,7 @@ namespace MonoHexGrid {
       return tiles.Count;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int shortest_path(MonoPiece piece, MonoTile from, MonoTile to, List<MonoTile> tiles) {
+    public int shortest_path(Piece piece, Tile from, Tile to, List<Tile> tiles) {
       tiles.Clear();
       if (from == to || !is_on_map(from.coords) || !is_on_map(to.coords)) {
         return tiles.Count;
@@ -668,13 +634,13 @@ namespace MonoHexGrid {
       from.road_march = road_march_bonus > 0;
       stack.Add(from);
       while (stack.Count > 0) {
-        MonoTile src = stack.Last();
+        Tile src = stack.Last();
         stack.RemoveAt(stack.Count - 1); // note: I added this
         if (src == to) {
           break;
         }
         _build_adjacents(src.coords);
-        foreach (MonoTile dst in adjacents) {
+        foreach (Tile dst in adjacents) {
           if (!dst.on_map) {
             continue;
           }
@@ -719,7 +685,7 @@ namespace MonoHexGrid {
       }
       stack.Clear();
       if (to.search_count == search_count) {
-        MonoTile t = to;
+        Tile t = to;
         while (t != from) {
           tiles.Add(t);
           t = t.parent;
@@ -729,24 +695,21 @@ namespace MonoHexGrid {
       return tiles.Count;
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int range_of_influence(MonoPiece piece, MonoTile from, int category, List<MonoTile> tiles) {
+    public int range_of_influence(Piece piece, Tile from, int category, List<Tile> tiles) {
       tiles.Clear();
       int max_range = piece.max_range_of_fire(category, from);
       if (!is_on_map(from.coords)) {
         return 0;
       }
-      List<MonoTile> tmp = new List<MonoTile>();
+      List<Tile> tmp = new List<Tile>();
       search_count++;
       from.search_count = search_count;
       stack.Add(from);
       while (stack.Count > 0) {
-        MonoTile src = stack.Last();
+        Tile src = stack.Last();
         stack.RemoveAt(stack.Count - 1); // note: I added this
         _build_adjacents(src.coords);
-        foreach (MonoTile dst in adjacents) {
+        foreach (Tile dst in adjacents) {
           if (!dst.on_map) {
             continue;
           }

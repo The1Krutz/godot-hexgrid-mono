@@ -6,7 +6,7 @@ using MonoHexGrid;
 namespace Demo {
   public class Map : Sprite {
     [Signal]
-    public delegate void hex_touched(Vector2 pos, Vector2 hex, int key); // TODO - make sure to double check these types
+    public delegate void hex_touched(Vector2 pos, Vector2 hex, int key);
 
     public const string MAPH = "res://demo/assets/map-h.png";
     public const string MAPV = "res://demo/assets/map-v.png";
@@ -21,9 +21,9 @@ namespace Demo {
     public const string MOUNT = "res://demo/assets/mountain.png";
 
     public Sprite drag;
-    public MonoHexBoard board;
+    public HexBoard board;
     public Vector2 prev;
-    public Dictionary<int, MonoTile> hexes = new Dictionary<int, MonoTile>();
+    public Dictionary<int, Tile> hexes = new Dictionary<int, Tile>();
     public int hex_rotation;
     private Vector2 p0;
     private Vector2 p1;
@@ -100,10 +100,10 @@ namespace Demo {
       }
       if (v) {
         hex_rotation = 30;
-        board = new MonoHexBoard(10, 4, 100, v0, false, GD.FuncRef(this, "get_tile"));
+        board = new HexBoard(10, 4, 100, v0, false, GD.FuncRef(this, "get_tile"));
       } else {
         hex_rotation = 0;
-        board = new MonoHexBoard(10, 7, 100, v0, true, GD.FuncRef(this, "get_tile"));
+        board = new HexBoard(10, 7, 100, v0, true, GD.FuncRef(this, "get_tile"));
       }
     }
 
@@ -165,7 +165,7 @@ namespace Demo {
       compute();
     }
 
-    public MonoTile get_tile(Vector2 coords, int k) {
+    public Tile get_tile(Vector2 coords, int k) {
       if (hexes.ContainsKey(k)) {
         return hexes[k];
       }
@@ -213,7 +213,7 @@ namespace Demo {
       }
       if (show_los) {
         Los.Visible = true;
-        Vector2 ct = board.line_of_sight(p0, p1, los.Cast<MonoTile>().ToList());
+        Vector2 ct = board.line_of_sight(p0, p1, los.Cast<Tile>().ToList());
         Los.setup(Tank.Position, Target.Position, ct);
         foreach (var hex in los) {
           hex.show_los(true);
@@ -226,8 +226,8 @@ namespace Demo {
         hex.show_short(false);
       }
       if (show_move) {
-        board.possible_moves(unit, board.get_tile(p0), move.Cast<MonoTile>().ToList());
-        board.shortest_path(unit, board.get_tile(p0), board.get_tile(p1), shoort.Cast<MonoTile>().ToList());
+        board.possible_moves(unit, board.get_tile(p0), move.Cast<Tile>().ToList());
+        board.shortest_path(unit, board.get_tile(p0), board.get_tile(p1), shoort.Cast<Tile>().ToList());
         foreach (var hex in move) {
           hex.show_move(true);
         }
@@ -239,7 +239,7 @@ namespace Demo {
         hex.show_influence(false);
       }
       if (show_influence) {
-        board.range_of_influence(unit, board.get_tile(p0), 0, influence.Cast<MonoTile>().ToList());
+        board.range_of_influence(unit, board.get_tile(p0), 0, influence.Cast<Tile>().ToList());
         foreach (var hex in influence) {
           hex.show_influence(true);
         }
