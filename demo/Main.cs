@@ -6,11 +6,11 @@ namespace Demo {
     public int moved;
     public bool drag_map;
 
-    Control _ui;
-    Map _map;
-    Camera _camera;
-    Viewport _viewport;
-    ViewportContainer _viewportcontainer;
+    private Control _ui;
+    private Map _map;
+    private Camera _camera;
+    private Viewport _viewport;
+    private ViewportContainer _viewportcontainer;
 
     public override async void _Ready() {
       _ui = GetNode<Control>("CanvasLayer/HBOX/UI");
@@ -19,14 +19,14 @@ namespace Demo {
       _viewport = GetNode<Viewport>("CanvasLayer/HBOX/ViewportContainer/Viewport");
       _viewportcontainer = GetNode<ViewportContainer>("CanvasLayer/HBOX/ViewportContainer");
 
-      _ui.GetNode<Button>("rotate").Connect("pressed", this, "on_rotate");
-      _ui.GetNode<Button>("zin").Connect("pressed", this, "on_zoom", new Array() { true });
-      _ui.GetNode<Button>("zout").Connect("pressed", this, "on_zoom", new Array() { false });
-      _ui.GetNode<CheckBox>("LOS").Connect("pressed", this, "on_toggle");
-      _ui.GetNode<CheckBox>("Move").Connect("pressed", this, "on_toggle");
-      _ui.GetNode<CheckBox>("Influence").Connect("pressed", this, "on_toggle");
-      _map.Connect("hex_touched", this, "on_hex_touched");
-      _viewportcontainer.Connect("resized", this, "on_viewport_resized");
+      _ui.GetNode<Button>("rotate").Connect("pressed", this, nameof(on_rotate));
+      _ui.GetNode<Button>("zin").Connect("pressed", this, nameof(on_zoom), new Array() { true });
+      _ui.GetNode<Button>("zout").Connect("pressed", this, nameof(on_zoom), new Array() { false });
+      _ui.GetNode<CheckBox>("LOS").Connect("pressed", this, nameof(on_toggle));
+      _ui.GetNode<CheckBox>("Move").Connect("pressed", this, nameof(on_toggle));
+      _ui.GetNode<CheckBox>("Influence").Connect("pressed", this, nameof(on_toggle));
+      _map.Connect(nameof(Map.hex_touched), this, nameof(on_hex_touched));
+      _viewportcontainer.Connect("resized", this, nameof(on_viewport_resized));
       on_toggle();
       await ToSignal(GetTree().CreateTimer(0.2f), "timeout");
       on_viewport_resized();

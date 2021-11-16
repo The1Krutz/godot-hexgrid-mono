@@ -173,13 +173,13 @@ namespace MonoHexGrid {
     public int key(Vector2 coords) {
       if (!is_on_map(coords)) { return -1; }
       if (v) {
-        return _key((int)(coords.x), (int)(coords.y));
+        return key((int)coords.x, (int)coords.y);
       } else {
-        return _key((int)(coords.y), (int)(coords.x));
+        return key((int)coords.y, (int)coords.x);
       }
     }
 
-    public int _key(int x, int y) {
+    private int key(int x, int y) {
       int n = y / 2;
       int i = x - n + (n * tl);
       if ((y % 2) != 0) {
@@ -193,7 +193,7 @@ namespace MonoHexGrid {
     /// </summary>
     public void adjacents_of(Tile tile, List<Tile> tiles) {
       tiles.Clear();
-      foreach (Tile t in _build_adjacents(tile.coords)) {
+      foreach (Tile t in build_adjacents(tile.coords)) {
         tiles.Add(t);
       }
     }
@@ -201,7 +201,7 @@ namespace MonoHexGrid {
     /// <summary>
     /// build the 6 adjacent Tiles of a Tile given by it's col;row coordinates
     /// </summary>
-    private List<Tile> _build_adjacents(Vector2 coords) {
+    private List<Tile> build_adjacents(Vector2 coords) {
       adjacents.Clear();
       coords.x++;
       adjacents.Add(get_tile(coords));
@@ -224,17 +224,17 @@ namespace MonoHexGrid {
     /// </summary>
     public bool is_on_map(Vector2 coords) {
       if (v) {
-        return _is_on_map((int)coords.x, (int)coords.y);
+        return is_on_map((int)coords.x, (int)coords.y);
       } else {
-        return _is_on_map((int)coords.y, (int)coords.x);
+        return is_on_map((int)coords.y, (int)coords.x);
       }
     }
 
-    private bool _is_on_map(int x, int y) {
-      if ((y < 0) || (y >= (int)(cr.y))) {
+    private bool is_on_map(int x, int y) {
+      if ((y < 0) || (y >= (int)cr.y)) {
         return false;
       }
-      if ((x < ((y + 1) / 2)) || (x >= ((int)(cr.x) + (y / 2)))) {
+      if ((x < ((y + 1) / 2)) || (x >= ((int)cr.x + (y / 2)))) {
         return false;
       }
       return true;
@@ -256,13 +256,13 @@ namespace MonoHexGrid {
     /// </summary>
     public Vector2 to_map(Vector2 r) {
       if (v) {
-        return _to_map(r.x, r.y, false);
+        return to_map(r.x, r.y, false);
       } else {
-        return _to_map(r.y, r.x, true);
+        return to_map(r.y, r.x, true);
       }
     }
 
-    private Vector2 _to_map(float x, float y, bool swap) {
+    private Vector2 to_map(float x, float y, bool swap) {
       // compute row
       float dy = y - bt.y;
       int row = (int)(dy / h);
@@ -316,16 +316,16 @@ namespace MonoHexGrid {
         float fdy = dy * 0.86602f;
         return Mathf.Sqrt((fdx * fdx) + (fdy * fdy));
       } else {
-        dx = (int)(Mathf.Abs(dx));
-        dy = (int)(Mathf.Abs(dy));
+        dx = Mathf.Abs(dx);
+        dy = Mathf.Abs(dy);
         float dz = Mathf.Abs(p1.x - p0.x - p1.y + p0.y);
         if (dx > dy) {
           if (dx > dz) {
-            return (float)(dx);
+            return (float)dx;
           }
         } else
           if (dy > dz) {
-          return (float)(dy);
+          return (float)dy;
         }
         return dz;
       }
@@ -342,7 +342,7 @@ namespace MonoHexGrid {
       // orthogonal projection
       float ox0 = p0.x - ((p0.y + 1) / 2);
       float ox1 = p1.x - ((p1.y + 1) / 2);
-      int dy = (int)(p1.y) - (int)(p0.y);
+      int dy = (int)p1.y - (int)p0.y;
       float dx = ox1 - ox0;
       // quadrant I && III
       bool q13 = (dx >= 0 && dy >= 0) || (dx < 0 && dy < 0);
@@ -356,18 +356,18 @@ namespace MonoHexGrid {
         ys = -1;
       }
       // dx counts half width
-      dy = (int)(Mathf.Abs(dy));
+      dy = Mathf.Abs(dy);
       dx = Mathf.Abs(2 * dx);
       int dx3 = (int)(3 * dx);
       int dy3 = 3 * dy;
       // check for diagonals
       if (dx == 0 || dx == dy3) {
-        return _diagonal_los(p0, p1, dx == 0, q13, tiles);
+        return diagonal_los(p0, p1, dx == 0, q13, tiles);
       }
       // angle is less than 45°
       bool flat = dx > dy3;
-      int x = (int)(p0.x);
-      int y = (int)(p0.y);
+      int x = (int)p0.x;
+      int y = (int)p0.y;
       int e = (int)(-2 * dx);
       Tile from = get_tile(p0);
       Tile to = get_tile(p1);
@@ -380,7 +380,7 @@ namespace MonoHexGrid {
       while ((x != p1.x) || (y != p1.y)) {
         if (e > 0) {
           // quadrant I : up left
-          e -= (dy3 + dx3);
+          e -= dy3 + dx3;
           y += ys;
           if (!q13) { x -= xs; }
         } else {
@@ -406,7 +406,7 @@ namespace MonoHexGrid {
         if (los_blocked && !contact) {
           Tile prev = tiles[^1];
           int o = to_orientation(angle(prev, t));
-          ret = _compute_contact(from.Position, to.Position, prev.Position, o);
+          ret = compute_contact(from.Position, to.Position, prev.Position, o);
           contact = true;
         }
         tiles.Add(t);
@@ -416,11 +416,11 @@ namespace MonoHexGrid {
       return ret;
     }
 
-    private Vector2 _diagonal_los(Vector2 p0, Vector2 p1, bool flat, bool q13, List<Tile> tiles) {
+    private Vector2 diagonal_los(Vector2 p0, Vector2 p1, bool flat, bool q13, List<Tile> tiles) {
       int dy = (p1.y > p0.y) ? 1 : -1;
       int dx = (p1.x > p0.x) ? 1 : -1;
-      int x = (int)(p0.x);
-      int y = (int)(p0.y);
+      int x = (int)p0.x;
+      int y = (int)p0.y;
       Tile from = get_tile(p0);
       Tile to = get_tile(p1);
       float d = distance(p0, p1);
@@ -477,11 +477,11 @@ namespace MonoHexGrid {
         tiles.Add(t);
         t.blocked = los_blocked || blocked == 0x03;
         if (t.blocked && !contact) {
-          int o = _compute_orientation(dx, dy, flat);
+          int o = compute_orientation(dx, dy, flat);
           if (!los_blocked && blocked == 0x03) {
-            ret = _compute_contact(from.Position, to.Position, t.Position, opposite(o));
+            ret = compute_contact(from.Position, to.Position, t.Position, opposite(o));
           } else {
-            ret = _compute_contact(from.Position, to.Position, tiles[^idx].Position, o);
+            ret = compute_contact(from.Position, to.Position, tiles[^idx].Position, o);
           }
           contact = true;
         }
@@ -490,7 +490,7 @@ namespace MonoHexGrid {
       return ret;
     }
 
-    private int _compute_orientation(int dx, int dy, bool flat) {
+    private int compute_orientation(int dx, int dy, bool flat) {
       if (flat) {
         if (v) {
           return (dy == 1) ? (int)Orientation.S : (int)Orientation.N;
@@ -502,21 +502,21 @@ namespace MonoHexGrid {
         if (dy == 1) {
           return (int)Orientation.E;
         } else {
-          return (v) ? (int)Orientation.E : (int)Orientation.N;
+          return v ? (int)Orientation.E : (int)Orientation.N;
         }
       } else {
         if (dy == 1) {
-          return (v) ? (int)Orientation.W : (int)Orientation.S;
+          return v ? (int)Orientation.W : (int)Orientation.S;
         } else {
           return (int)Orientation.W;
         }
       }
     }
 
-    private Vector2 _compute_contact(Vector2 from, Vector2 to, Vector2 t, int o) {
+    private Vector2 compute_contact(Vector2 from, Vector2 to, Vector2 t, int o) {
       float dx = to.x - from.x;
       float dy = to.y - from.y;
-      float n = (dx == 0) ? (float)(IMAX) : (dy / dx);
+      float n = (dx == 0) ? IMAX : (dy / dx);
       float c = from.y - (n * from.x);
       if (v) {
         if (o == (int)Orientation.N) {
@@ -584,10 +584,10 @@ namespace MonoHexGrid {
       while (stack.Count > 0) {
         Tile src = stack.Last();
         stack.RemoveAt(stack.Count - 1); // note: I added this
-        if ((src.acc + ((src.road_march) ? road_march_bonus : 0)) <= 0) {
+        if ((src.acc + (src.road_march ? road_march_bonus : 0)) <= 0) {
           continue;
         }
-        _build_adjacents(src.coords);
+        build_adjacents(src.coords);
         foreach (Tile dst in adjacents) {
           if (!dst.on_map) {
             continue;
@@ -600,7 +600,7 @@ namespace MonoHexGrid {
           int r = src.acc - cost;
           bool rm = src.road_march && src.has_road(o);
           // not enough MP even with RM, maybe first move allowed
-          if ((r + ((rm) ? road_march_bonus : 0)) < 0 && !(src == from && piece.at_least_one_tile(dst))) {
+          if ((r + (rm ? road_march_bonus : 0)) < 0 && !(src == from && piece.at_least_one_tile(dst))) {
             continue;
           }
           if (dst.search_count != search_count) {
@@ -639,7 +639,7 @@ namespace MonoHexGrid {
         if (src == to) {
           break;
         }
-        _build_adjacents(src.coords);
+        build_adjacents(src.coords);
         foreach (Tile dst in adjacents) {
           if (!dst.on_map) {
             continue;
@@ -708,7 +708,7 @@ namespace MonoHexGrid {
       while (stack.Count > 0) {
         Tile src = stack.Last();
         stack.RemoveAt(stack.Count - 1); // note: I added this
-        _build_adjacents(src.coords);
+        build_adjacents(src.coords);
         foreach (Tile dst in adjacents) {
           if (!dst.on_map) {
             continue;
@@ -717,7 +717,7 @@ namespace MonoHexGrid {
             continue;
           }
           dst.search_count = search_count;
-          int d = (int)(distance(from.coords, dst.coords, false));
+          int d = (int)distance(from.coords, dst.coords, false);
           if (d > max_range) {
             continue;
           }

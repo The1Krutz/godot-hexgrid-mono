@@ -5,7 +5,7 @@ using MonoHexGrid;
 namespace Demo {
   public class Hex : Tile {
     public int type = -1;
-    public int roads = 0;
+    public int roads;
 
     public override void _Ready() {
       type = -1;
@@ -50,11 +50,11 @@ namespace Demo {
         return (h * dt / (e - h)) >= (d - dt);
       }
       h -= e;
-      return ((h * d / dt) >= to.elevation() - e);
+      return (h * d / dt) >= to.elevation() - e;
     }
 
     public void change() {
-      type = (type + 2) % 5 - 1;
+      type = ((type + 2) % 5) - 1;
       for (int i = 0; i < 4; i++) // i in range(4), double check that gives the same range as this
       { enable_overlay(i + 3, i == type); }
     }
@@ -107,7 +107,7 @@ namespace Demo {
 
     public void show_los(bool b) {
       if (b) {
-        enable_overlay((blocked ? 2 : 1), true);
+        enable_overlay(blocked ? 2 : 1, true);
       } else {
         enable_overlay(1, false);
         enable_overlay(2, false);

@@ -87,7 +87,7 @@ namespace Demo {
     }
 
     public void configure() {
-      bool v = (IsInstanceValid(board) && board.v);
+      bool v = IsInstanceValid(board) && board.v;
       Vector2 v0 = new Vector2(50, 100);
       if (Centered) {
         Vector2 ts = Texture.GetSize();
@@ -169,9 +169,10 @@ namespace Demo {
       if (hexes.ContainsKey(k)) {
         return hexes[k];
       }
-      Hex hex = new Hex();
-      hex.roads = get_road(k);
-      hex.RotationDegrees = hex_rotation;
+      Hex hex = new Hex {
+        roads = get_road(k),
+        RotationDegrees = hex_rotation
+      };
       hex.configure(board.center_of(coords), coords, new List<string>() { RED, GREEN, BLACK, CITY, TREE, MOUNT, BLOCK, MOVE, SHORT });
       hexes[k] = hex;
       Hexes.AddChild(hex);
@@ -203,7 +204,7 @@ namespace Demo {
     }
 
     public void notify(Vector2 pos, Vector2 coords) {
-      EmitSignal("hex_touched", pos, board.get_tile(coords), (board.is_on_map(coords) ? board.key(coords) : -1));
+      EmitSignal(nameof(hex_touched), pos, board.get_tile(coords), board.is_on_map(coords) ? board.key(coords) : -1);
     }
 
     public void compute() {
