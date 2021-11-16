@@ -30,7 +30,7 @@ namespace Demo {
       on_toggle();
       await ToSignal(GetTree().CreateTimer(0.2f), "timeout");
       on_viewport_resized();
-      _ui.GetNode<Label>("OSInfo").Text = $"screen\n{OS.GetScreenSize()}\ndpi {OS.GetScreenDpi()}";
+      _ui.GetNode<Label>("OSInfo").Text = $"screen\n{OS.GetScreenSize()}\ndpi {OS.GetScreenDpi():F0}";
     }
 
     public void on_viewport_resized() {
@@ -52,7 +52,7 @@ namespace Demo {
 
     public void on_hex_touched(Vector2 pos, Hex hex, int key) {
       string s = key == -1 ? "offmap" : hex.inspect();
-      _ui.GetNode<Label>("Info").Text = $"\n({pos.x};{pos.y})\n -> {s}\n -> {key}";
+      _ui.GetNode<Label>("Info").Text = $"\n({pos.x:F1};{pos.y:F1})\n -> {s}\n -> {key}";
     }
 
     public override void _UnhandledInput(InputEvent @event) {

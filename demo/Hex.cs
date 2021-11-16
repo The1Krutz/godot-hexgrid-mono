@@ -22,7 +22,7 @@ namespace Demo {
       } else if (type == 3) {
         s = "blocked";
       }
-      return $"[{coords.x};{coords.y}]\n -> ({Position.x};{Position.y})\n -> {s}\ne:{elevation()} h:{height()} c:{cost()} r:{roads}";
+      return $"[{coords.x:F0};{coords.y:F0}]\n -> ({Position.x:F0};{Position.y:F0})\n -> {s}\ne:{elevation()} h:{height()} c:{cost()} r:{roads}";
     }
 
     public override bool has_road(int orientation) {

@@ -21,6 +21,7 @@ namespace Demo {
     public const string MOUNT = "res://demo/assets/mountain.png";
 
     public Sprite drag;
+
     public HexBoard board;
     public Vector2 prev;
     public Dictionary<int, Tile> hexes = new Dictionary<int, Tile>();
@@ -37,17 +38,17 @@ namespace Demo {
     public bool show_influence;
 
     // $etc
-    private Sprite Tank;
-    private Sprite Target;
-    private Node Hexes;
-    private Los Los;
+    private Sprite _tank;
+    private Sprite _target;
+    private Node _hexes;
+    private Los _los;
 
     public override void _Ready() {
       // $etc
-      Tank = GetNode<Sprite>("Tank");
-      Target = GetNode<Sprite>("Target");
-      Hexes = GetNode<Node>("Hexes");
-      Los = GetNode<Los>("Los");
+      _tank = GetNode<Sprite>("Tank");
+      _target = GetNode<Sprite>("Target");
+      _hexes = GetNode<Node>("Hexes");
+      _los = GetNode<Los>("Los");
 
       drag = null;
       unit = new Unit();
@@ -60,14 +61,14 @@ namespace Demo {
       shoort.Clear();
       influence.Clear();
       hexes.Clear();
-      hexes[-1] = new Hex();  // off map
+      hexes[-1] = new Hex(); // off map
       p0 = new Vector2(0, 0);
       p1 = new Vector2(3, 3);
 
-      Tank.Position = board.center_of(p0);
-      Target.Position = board.center_of(p1);
-      foreach (Node hex in Hexes.GetChildren()) {
-        Hexes.RemoveChild(hex);
+      _tank.Position = board.center_of(p0);
+      _target.Position = board.center_of(p1);
+      foreach (Node hex in _hexes.GetChildren()) {
+        _hexes.RemoveChild(hex);
         hex.QueueFree();
       }
       compute();
@@ -100,10 +101,10 @@ namespace Demo {
       }
       if (v) {
         hex_rotation = 30;
-        board = new HexBoard(10, 4, 100, v0, false, GD.FuncRef(this, "get_tile"));
+        board = new HexBoard(10, 4, 100, v0, false, GD.FuncRef(this, nameof(get_tile)));
       } else {
         hex_rotation = 0;
-        board = new HexBoard(10, 7, 100, v0, true, GD.FuncRef(this, "get_tile"));
+        board = new HexBoard(10, 7, 100, v0, true, GD.FuncRef(this, nameof(get_tile)));
       }
     }
 
@@ -127,10 +128,10 @@ namespace Demo {
       if (pressed) {
         notify(pos, coords);
         prev = coords;
-        if (board.to_map(Tank.Position) == coords) {
-          drag = Tank;
-        } else if (board.to_map(Target.Position) == coords) {
-          drag = Target;
+        if (board.to_map(_tank.Position) == coords) {
+          drag = _tank;
+        } else if (board.to_map(_target.Position) == coords) {
+          drag = _target;
         } else {
           return true;
         }
@@ -138,7 +139,7 @@ namespace Demo {
         if (drag != null) {
           if (board.is_on_map(coords)) {
             drag.Position = board.center_of(coords);
-            if (drag == Tank) {
+            if (drag == _tank) {
               p0 = coords;
             } else {
               p1 = coords;
@@ -175,7 +176,7 @@ namespace Demo {
       };
       hex.configure(board.center_of(coords), coords, new List<string>() { RED, GREEN, BLACK, CITY, TREE, MOUNT, BLOCK, MOVE, SHORT });
       hexes[k] = hex;
-      Hexes.AddChild(hex);
+      _hexes.AddChild(hex);
       return hex;
     }
 
@@ -208,14 +209,14 @@ namespace Demo {
     }
 
     public void compute() {
-      Los.Visible = false;
+      _los.Visible = false;
       foreach (var hex in los) {
         hex.show_los(false);
       }
       if (show_los) {
-        Los.Visible = true;
+        _los.Visible = true;
         Vector2 ct = board.line_of_sight(p0, p1, los.Cast<Tile>().ToList());
-        Los.setup(Tank.Position, Target.Position, ct);
+        _los.setup(_tank.Position, _target.Position, ct);
         foreach (var hex in los) {
           hex.show_los(true);
         }
