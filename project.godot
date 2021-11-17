@@ -18,12 +18,3 @@ config/icon="res://icon.png"
 
 window/size/width=1920
 window/size/height=1080
-
-[editor_plugins]
-
-enabled=PoolStringArray(  )
-
-[gd2cs]
-
-config/ask_no_python=true
-config/python="python3"
