@@ -1,10 +1,12 @@
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 using MonoHexGrid;
 
 namespace Demo
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class Map : Sprite
     {
         [Signal]
@@ -58,6 +60,9 @@ namespace Demo
             RotateMap();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void Reset()
         {
             los.Clear();
@@ -79,6 +84,9 @@ namespace Demo
             Compute();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void RotateMap()
         {
             Texture = GD.Load<Texture>(IsInstanceValid(board) && board.v ? MAPH : MAPV);
@@ -86,6 +94,12 @@ namespace Demo
             Reset();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="l"></param>
+        /// <param name="m"></param>
+        /// <param name="i"></param>
         public void SetMode(bool l, bool m, bool i)
         {
             show_los = l;
@@ -94,6 +108,9 @@ namespace Demo
             Compute();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void Configure()
         {
             bool v = IsInstanceValid(board) && board.v;
@@ -123,16 +140,25 @@ namespace Demo
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public Vector2 TextureSize()
         {
             return Texture.GetSize();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public Vector2 Center()
         {
             return Centered ? new Vector2(0, 0) : Texture.GetSize() / 2;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void OnMouseMove()
         {
             if (drag != null)
@@ -141,6 +167,10 @@ namespace Demo
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="pressed"></param>
         public bool OnClick(bool pressed)
         {
             Vector2 pos = GetLocalMousePosition();
@@ -162,41 +192,40 @@ namespace Demo
                     return true;
                 }
             }
-            else
+            else if (drag != null)
             {
-                if (drag != null)
+                if (board.IsOnMap(coords))
                 {
-                    if (board.IsOnMap(coords))
+                    drag.Position = board.CenterOf(coords);
+                    if (drag == _tank)
                     {
-                        drag.Position = board.CenterOf(coords);
-                        if (drag == _tank)
-                        {
-                            p0 = coords;
-                        }
-                        else
-                        {
-                            p1 = coords;
-                        }
-                        Notify(pos, coords);
-                        Compute();
+                        p0 = coords;
                     }
                     else
                     {
-                        drag.Position = board.CenterOf(prev);
+                        p1 = coords;
                     }
-                    drag = null;
+                    Notify(pos, coords);
+                    Compute();
                 }
                 else
                 {
-                    if (coords == prev && board.IsOnMap(coords))
-                    {
-                        ChangeTile(coords, pos);
-                    }
+                    drag.Position = board.CenterOf(prev);
                 }
+                drag = null;
+            }
+            else if (coords == prev && board.IsOnMap(coords))
+            {
+                ChangeTile(coords, pos);
             }
             return false;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="coords"></param>
+        /// <param name="pos"></param>
         public void ChangeTile(Vector2 coords, Vector2 pos)
         {
             Hex hex = (Hex)board.GetTile(coords);
@@ -205,6 +234,11 @@ namespace Demo
             Compute();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="coords"></param>
+        /// <param name="k"></param>
         public Tile GetTile(Vector2 coords, int k)
         {
             if (hexes.ContainsKey(k))
@@ -222,6 +256,10 @@ namespace Demo
             return hex;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="k"></param>
         public int GetRoad(int k)
         {
             if (!board.v)
@@ -250,11 +288,19 @@ namespace Demo
             return v;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="coords"></param>
         public void Notify(Vector2 pos, Vector2 coords)
         {
             EmitSignal(nameof(hex_touched), pos, board.GetTile(coords), board.IsOnMap(coords) ? board.Key(coords) : -1);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void Compute()
         {
             _los.Visible = false;

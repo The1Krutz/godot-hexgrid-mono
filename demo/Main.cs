@@ -3,6 +3,9 @@ using Array = Godot.Collections.Array;
 
 namespace Demo
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class Main : Node2D
     {
         public int moved;
@@ -36,27 +39,46 @@ namespace Demo
             _ui.GetNode<Label>("OSInfo").Text = $"screen\n{OS.GetScreenSize()}\ndpi {OS.GetScreenDpi():F0}";
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void OnViewportResized()
         {
             _camera.Configure(_viewport.Size, _map.Center(), _map.TextureSize());
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void OnRotate()
         {
             _map.RotateMap();
             OnViewportResized();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="b"></param>
         public void OnZoom(bool b)
         {
             _camera.UpdateCamera(0, 0, b ? -0.05f : 0.05f);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public void OnToggle()
         {
             _map.SetMode(_ui.GetNode<CheckBox>("LOS").Pressed, _ui.GetNode<CheckBox>("Move").Pressed, _ui.GetNode<CheckBox>("Influence").Pressed);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="hex"></param>
+        /// <param name="key"></param>
         public void OnHexTouched(Vector2 pos, Hex hex, int key)
         {
             string s = key == -1 ? "offmap" : hex.Inspect();
@@ -82,14 +104,7 @@ namespace Demo
             {
                 if (_mbe.ButtonIndex == 1)
                 {
-                    if (moved < 5)
-                    {
-                        drag_map = _map.OnClick(_mbe.Pressed);
-                    }
-                    else
-                    {
-                        drag_map = false;
-                    }
+                    drag_map = moved < 5 && _map.OnClick(_mbe.Pressed);
                     moved = 0;
                 }
                 else if (_mbe.ButtonIndex == 3)

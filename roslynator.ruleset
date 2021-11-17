@@ -23,6 +23,9 @@ Just add ruleset file to a solution and open it.
 
   <Rules AnalyzerId="Roslynator.CSharp.Analyzers" RuleNamespace="Roslynator.CSharp.Analyzers">
     <Rule Id="RCS1110" Action="None" />
+    <Rule Id="RCS1140" Action="Warning" />
+    <Rule Id="RCS1141" Action="Warning" />
+    <Rule Id="RCS1142" Action="Warning" />
     <Rule Id="RCS1169" Action="None" />
     <Rule Id="IDE0044" Action="None" />
     <!-- Specify default action that should be applied to a specified analyzer. -->

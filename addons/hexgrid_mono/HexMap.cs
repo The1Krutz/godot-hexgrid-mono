@@ -4,12 +4,24 @@ using Godot;
 
 namespace MonoHexGrid
 {
+    /// <summary>
+    ///
+    /// </summary>
     public enum Orientation
     {
         E = 1, NE = 2, N = 4, NW = 8, W = 16, SW = 32, S = 64, SE = 128
     }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="coords"></param>
+    /// <param name="k"></param>
     public delegate Tile GetTile(Vector2 coords, int k);
 
+    /// <summary>
+    ///
+    /// </summary>
     public class HexBoard : Node
     {
         public const int IMAX = int.MaxValue;
@@ -35,6 +47,15 @@ namespace MonoHexGrid
         public int search_count;
         public List<Tile> stack = new List<Tile>();
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="cols"></param>
+        /// <param name="rows"></param>
+        /// <param name="side"></param>
+        /// <param name="v0"></param>
+        /// <param name="vertical"></param>
+        /// <param name="fct"></param>
         public HexBoard(int cols, int rows, float side, Vector2 v0, bool vertical, GetTile fct)
         {
             tile_factory_fct = fct;
@@ -91,6 +112,7 @@ namespace MonoHexGrid
         /// <summary>
         /// fetch a Tile given it's col;row coordinates
         /// </summary>
+        /// <param name="coords"></param>
         public Tile GetTile(Vector2 coords)
         {
             return tile_factory_fct(coords, Key(coords));
@@ -99,6 +121,7 @@ namespace MonoHexGrid
         /// <summary>
         /// Orientation to degrees
         /// </summary>
+        /// <param name="o"></param>
         public int ToDegrees(int o)
         {
             return angles.TryGetValue(o, out int temp) ? temp : -1;
@@ -107,6 +130,7 @@ namespace MonoHexGrid
         /// <summary>
         /// convert the given angle between 2 adjacent Tiles into an Orientation
         /// </summary>
+        /// <param name="a"></param>
         public int ToOrientation(float a)
         {
             foreach (int k in angles.Keys)
@@ -122,6 +146,8 @@ namespace MonoHexGrid
         /// <summary>
         /// compute the angle between 2 adjacent Tiles
         /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         public int Angle(Tile from, Tile to)
         {
             float a = Mathf.Rad2Deg((to.Position - from.Position).Angle()) + DEGREE_ADJ;
@@ -135,16 +161,20 @@ namespace MonoHexGrid
         /// <summary>
         /// return the opposite of a given Orientation
         /// </summary>
+        /// <param name="o"></param>
         public int Opposite(int o)
         {
-            if (o <= (int)Orientation.NW) return o << 4;
-            return o >> 4;
+            return o <= (int)Orientation.NW
+                ? o << 4
+                : o >> 4;
         }
 
         /// <summary>
         /// return the Orientation given to distant Tiles
         /// Orientation is combined in case of diagonals
         /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         public int DistantOrientation(Tile from, Tile to)
         {
             float a = Mathf.Rad2Deg((to.Position - from.Position).Angle());
@@ -161,15 +191,16 @@ namespace MonoHexGrid
                 {
                     // diagonal
                     int p = k >> 1;
-                    if (p == 0) { p = (int)Orientation.SE; }
+                    if (p == 0)
+                    {
+                        p = (int)Orientation.SE;
+                    }
                     if (!angles.ContainsKey(p))
                     {
-                        return k | p >> 1; // v : N S and not v : W E;
+                        return k | (p >> 1); // v : N S and not v : W E;
                     }
-                    else
-                    {
-                        return k | p;
-                    }
+
+                    return k | p;
                 }
                 else if (z == 30 && (a < DEGREE_ADJ || a > 360 - DEGREE_ADJ))
                 {
@@ -180,16 +211,15 @@ namespace MonoHexGrid
                     return k;
                 }
             }
-            if (angles.ContainsKey((int)Orientation.E) && a > 330 && a <= 360)
-            {
-                return (int)Orientation.E;
-            }
-            return -1;
+            return angles.ContainsKey((int)Orientation.E) && a > 330 && a <= 360
+                ? (int)Orientation.E
+                : -1;
         }
 
         /// <summary>
         /// return the opposite of a possibly combined given Orientation
         /// </summary>
+        /// <param name="o"></param>
         public int DistantOpposite(int o)
         {
             int r = 0;
@@ -206,19 +236,20 @@ namespace MonoHexGrid
         /// <summary>
         /// return the key of a given col;row coordinate
         /// </summary>
+        /// <param name="coords"></param>
         public int Key(Vector2 coords)
         {
             if (!IsOnMap(coords)) { return -1; }
-            if (v)
-            {
-                return Key((int)coords.x, (int)coords.y);
-            }
-            else
-            {
-                return Key((int)coords.y, (int)coords.x);
-            }
+            return v
+                ? Key((int)coords.x, (int)coords.y)
+                : Key((int)coords.y, (int)coords.x);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         private int Key(int x, int y)
         {
             int n = y / 2;
@@ -233,6 +264,8 @@ namespace MonoHexGrid
         /// <summary>
         /// build the 6 adjacent Tiles of a Tile given by it's col;row coordinates
         /// </summary>
+        /// <param name="tile"></param>
+        /// <param name="tiles"></param>
         public void AdjacentsOf(Tile tile, List<Tile> tiles)
         {
             tiles.Clear();
@@ -245,6 +278,7 @@ namespace MonoHexGrid
         /// <summary>
         /// build the 6 adjacent Tiles of a Tile given by it's col;row coordinates
         /// </summary>
+        /// <param name="coords"></param>
         private List<Tile> BuildAdjacents(Vector2 coords)
         {
             adjacents.Clear();
@@ -267,61 +301,56 @@ namespace MonoHexGrid
         /// <summary>
         /// return true if the Tile is on the map
         /// </summary>
+        /// <param name="coords"></param>
         public bool IsOnMap(Vector2 coords)
         {
-            if (v)
-            {
-                return IsOnMap((int)coords.x, (int)coords.y);
-            }
-            else
-            {
-                return IsOnMap((int)coords.y, (int)coords.x);
-            }
+            return v
+                ? IsOnMap((int)coords.x, (int)coords.y)
+                : IsOnMap((int)coords.y, (int)coords.x);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         private bool IsOnMap(int x, int y)
         {
             if ((y < 0) || (y >= (int)cr.y))
             {
                 return false;
             }
-            if ((x < ((y + 1) / 2)) || (x >= ((int)cr.x + (y / 2))))
-            {
-                return false;
-            }
-            return true;
+            return x >= ((y + 1) / 2) && x < ((int)cr.x + (y / 2));
         }
 
         /// <summary>
         /// compute the center of a Tile given by it's col;row coordinates
         /// </summary>
+        /// <param name="coords"></param>
         public Vector2 CenterOf(Vector2 coords)
         {
-            if (v)
-            {
-                return new Vector2(bt.x + dw + (coords.x * w) - (coords.y * dw), bt.y + dh + (coords.y * h));
-            }
-            else
-            {
-                return new Vector2(bt.y + dh + (coords.x * h), bt.x + dw + (coords.y * w) - (coords.x * dw));
-            }
+            return v
+                ? new Vector2(bt.x + dw + (coords.x * w) - (coords.y * dw), bt.y + dh + (coords.y * h))
+                : new Vector2(bt.y + dh + (coords.x * h), bt.x + dw + (coords.y * w) - (coords.x * dw));
         }
 
         /// <summary>
         /// compute the col;row coordinates of a Tile given it's real coordinates
         /// </summary>
+        /// <param name="r"></param>
         public Vector2 ToMap(Vector2 r)
         {
-            if (v)
-            {
-                return ToMap(r.x, r.y, false);
-            }
-            else
-            {
-                return ToMap(r.y, r.x, true);
-            }
+            return v
+                ? ToMap(r.x, r.y, false)
+                : ToMap(r.y, r.x, true);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="swap"></param>
         private Vector2 ToMap(float x, float y, bool swap)
         {
             // compute row
@@ -352,29 +381,24 @@ namespace MonoHexGrid
                         row++;
                     }
                 }
-                else
+                else if (dy > ((w - dx) * m))
                 {
-                    if (dy > ((w - dx) * m))
-                    {
-                        // upper right hex
-                        row++;
-                        col++;
-                    }
+                    // upper right hex
+                    row++;
+                    col++;
                 }
             }
-            if (swap)
-            {
-                return new Vector2(row, col);
-            }
-            else
-            {
-                return new Vector2(col, row);
-            }
+            return swap
+                ? new Vector2(row, col)
+                : new Vector2(col, row);
         }
 
         /// <summary>
         /// compute the distance between 2 Tiles given by their col;row coordinates
         /// </summary>
+        /// <param name="p0"></param>
+        /// <param name="p1"></param>
+        /// <param name="euclidean"></param>
         public float Distance(Vector2 p0, Vector2 p1, bool euclidean = true)
         {
             int dx = (int)(p1.x - p0.x);
@@ -393,25 +417,23 @@ namespace MonoHexGrid
                 float fdy = dy * 0.86602f;
                 return Mathf.Sqrt((fdx * fdx) + (fdy * fdy));
             }
-            else
+            dx = Mathf.Abs(dx);
+            dy = Mathf.Abs(dy);
+            float dz = Mathf.Abs(p1.x - p0.x - p1.y + p0.y);
+            if (dx > dy)
             {
-                dx = Mathf.Abs(dx);
-                dy = Mathf.Abs(dy);
-                float dz = Mathf.Abs(p1.x - p0.x - p1.y + p0.y);
-                if (dx > dy)
+                if (dx > dz)
                 {
-                    if (dx > dz)
-                    {
-                        return dx;
-                    }
+                    return dx;
                 }
-                else
-                  if (dy > dz)
-                {
-                    return dy;
-                }
-                return dz;
             }
+            else
+              if (dy > dz)
+            {
+                return dy;
+            }
+
+            return dz;
         }
 
         /// <summary>
@@ -420,6 +442,9 @@ namespace MonoHexGrid
         /// compute as an List, the line of sight between 2 Tiles given by their col;row coordinates
         /// return the point after which the line of sight is blocked
         /// </summary>
+        /// <param name="p0"></param>
+        /// <param name="p1"></param>
+        /// <param name="tiles"></param>
         public Vector2 LineOfSight(Vector2 p0, Vector2 p1, List<Tile> tiles)
         {
             tiles.Clear();
@@ -522,6 +547,14 @@ namespace MonoHexGrid
             return ret;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="p0"></param>
+        /// <param name="p1"></param>
+        /// <param name="flat"></param>
+        /// <param name="q13"></param>
+        /// <param name="tiles"></param>
         private Vector2 DiagonalLoS(Vector2 p0, Vector2 p1, bool flat, bool q13, List<Tile> tiles)
         {
             int dy = (p1.y > p0.y) ? 1 : -1;
@@ -603,14 +636,9 @@ namespace MonoHexGrid
                 if (t.blocked && !contact)
                 {
                     int o = ComputeOrientation(dx, dy, flat);
-                    if (!los_blocked && blocked == 0x03)
-                    {
-                        ret = ComputeContact(from.Position, to.Position, t.Position, Opposite(o));
-                    }
-                    else
-                    {
-                        ret = ComputeContact(from.Position, to.Position, tiles[^idx].Position, o);
-                    }
+                    ret = !los_blocked && blocked == 0x03
+                        ? ComputeContact(from.Position, to.Position, t.Position, Opposite(o))
+                        : ComputeContact(from.Position, to.Position, tiles[^idx].Position, o);
                     contact = true;
                 }
                 los_blocked = t.blocked || t.BlockLos(from, to, d, Distance(p0, q));
@@ -618,18 +646,22 @@ namespace MonoHexGrid
             return ret;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="dx"></param>
+        /// <param name="dy"></param>
+        /// <param name="flat"></param>
         private int ComputeOrientation(int dx, int dy, bool flat)
         {
             if (flat)
             {
                 if (v)
                 {
-                    return (dy == 1) ? (int)Orientation.S : (int)Orientation.N;
+                    return dy == 1 ? (int)Orientation.S : (int)Orientation.N;
                 }
-                else
-                {
-                    return (dx == 1) ? (int)Orientation.S : (int)Orientation.N;
-                }
+
+                return dx == 1 ? (int)Orientation.S : (int)Orientation.N;
             }
             if (dx == 1)
             {
@@ -637,24 +669,24 @@ namespace MonoHexGrid
                 {
                     return (int)Orientation.E;
                 }
-                else
-                {
-                    return v ? (int)Orientation.E : (int)Orientation.N;
-                }
+
+                return v ? (int)Orientation.E : (int)Orientation.N;
             }
-            else
+            if (dy == 1)
             {
-                if (dy == 1)
-                {
-                    return v ? (int)Orientation.W : (int)Orientation.S;
-                }
-                else
-                {
-                    return (int)Orientation.W;
-                }
+                return v ? (int)Orientation.W : (int)Orientation.S;
             }
+
+            return (int)Orientation.W;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="t"></param>
+        /// <param name="o"></param>
         private Vector2 ComputeContact(Vector2 from, Vector2 to, Vector2 t, int o)
         {
             float dx = to.x - from.x;
@@ -697,41 +729,32 @@ namespace MonoHexGrid
                     return new Vector2(x, (n * x) + c);
                 }
             }
+            else if (o == (int)Orientation.E)
+            {
+                return new Vector2(t.x + s, t.y);
+            }
+            else if (o == (int)Orientation.W)
+            {
+                return new Vector2(t.x - s, t.y);
+            }
+            else if (o == (int)Orientation.N)
+            {
+                float y = t.y - dw;
+                return new Vector2(from.x + ((y - from.y) / n), y);
+            }
+            else if (o == (int)Orientation.S)
+            {
+                float y = t.y + dw;
+                return new Vector2(from.x + ((y - from.y) / n), y);
+            }
             else
             {
-                if (o == (int)Orientation.E)
-                {
-                    return new Vector2(t.x + s, t.y);
-                }
-                else if (o == (int)Orientation.W)
-                {
-                    return new Vector2(t.x - s, t.y);
-                }
-                else if (o == (int)Orientation.N)
-                {
-                    float y = t.y - dw;
-                    return new Vector2(from.x + ((y - from.y) / n), y);
-                }
-                else if (o == (int)Orientation.S)
-                {
-                    float y = t.y + dw;
-                    return new Vector2(from.x + ((y - from.y) / n), y);
-                }
-                else
-                {
-                    float p = (o == (int)Orientation.SE || o == (int)Orientation.NW) ? -im : +im;
-                    float k;
-                    if (o == (int)Orientation.SW || o == (int)Orientation.NW)
-                    {
-                        k = t.y - (p * (t.x - s));
-                    }
-                    else
-                    {
-                        k = t.y - (p * (t.x + s));
-                    }
-                    float x = (k - c) / (n - p);
-                    return new Vector2(x, (n * x) + c);
-                }
+                float p = (o == (int)Orientation.SE || o == (int)Orientation.NW) ? -im : +im;
+                float k = o == (int)Orientation.SW || o == (int)Orientation.NW
+                    ? t.y - (p * (t.x - s))
+                    : t.y - (p * (t.x + s));
+                float x = (k - c) / (n - p);
+                return new Vector2(x, (n * x) + c);
             }
         }
 
@@ -739,6 +762,9 @@ namespace MonoHexGrid
         /// compute as an List, the Tiles that can be reached by a given Piece from a Tile given by it's col;row coordinates
         /// return the size of the built List
         /// </summary>
+        /// <param name="piece"></param>
+        /// <param name="from"></param>
+        /// <param name="tiles"></param>
         public int PossibleMoves(Piece piece, Tile from, List<Tile> tiles)
         {
             tiles.Clear();
@@ -802,6 +828,13 @@ namespace MonoHexGrid
             return tiles.Count;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="piece"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="tiles"></param>
         public int ShortestPath(Piece piece, Tile from, Tile to, List<Tile> tiles)
         {
             tiles.Clear();
@@ -895,6 +928,13 @@ namespace MonoHexGrid
             return tiles.Count;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="piece"></param>
+        /// <param name="from"></param>
+        /// <param name="category"></param>
+        /// <param name="tiles"></param>
         public int RangeOfInfluence(Piece piece, Tile from, int category, List<Tile> tiles)
         {
             tiles.Clear();

@@ -2,6 +2,9 @@ using Godot;
 
 namespace Demo
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class Los : Node2D
     {
         private Vector2 _p0;
@@ -21,6 +24,12 @@ namespace Demo
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="v0"></param>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
         public void Setup(Vector2 v0, Vector2 v1, Vector2 v2)
         {
             _p0 = v0;

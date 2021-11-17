@@ -2,6 +2,9 @@ using Godot;
 
 namespace Demo
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class Camera : Camera2D
     {
         public Vector2 margin;
@@ -15,6 +18,12 @@ namespace Demo
             margin = new Vector2(0, 0);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="w"></param>
+        /// <param name="c"></param>
+        /// <param name="ts"></param>
         public void Configure(Vector2 w, Vector2 c, Vector2 ts)
         {
             window = w;
@@ -25,6 +34,12 @@ namespace Demo
             UpdateCamera(0, 0, zoom_boundaries.y);
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
         public void UpdateCamera(float x, float y, float z)
         {
             if (z != 0)
