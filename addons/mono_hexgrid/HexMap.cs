@@ -55,6 +55,7 @@ namespace MonoHexGrid {
       if (v) {
         // origin [top-left] East is at 0°, degrees grows clockwise
         angles[(int)Orientation.E] = 0;
+        angles[(int)Orientation.SE] = 60;
         angles[(int)Orientation.SW] = 120;
         angles[(int)Orientation.W] = 180;
         angles[(int)Orientation.NW] = 240;
@@ -322,11 +323,11 @@ namespace MonoHexGrid {
         float dz = Mathf.Abs(p1.x - p0.x - p1.y + p0.y);
         if (dx > dy) {
           if (dx > dz) {
-            return (float)dx;
+            return dx;
           }
         } else
           if (dy > dz) {
-          return (float)dy;
+          return dy;
         }
         return dz;
       }
@@ -383,19 +384,25 @@ namespace MonoHexGrid {
           // quadrant I : up left
           e -= dy3 + dx3;
           y += ys;
-          if (!q13) { x -= xs; }
+          if (!q13) {
+            x -= xs;
+          }
         } else {
           e += dy3;
           if ((e > -dx) || (!flat && (e == -dx))) {
             // quadrant I : up right
             e -= dx3;
             y += ys;
-            if (q13) { x += xs; }
+            if (q13) {
+              x += xs;
+            }
           } else if (e < -dx3) {
             // quadrant I : down right
             e += dx3;
             y -= ys;
-            if (!q13) { x += xs; }
+            if (!q13) {
+              x += xs;
+            }
           } else {
             // quadrant I : right
             e += dy3;
