@@ -21,21 +21,21 @@ namespace Demo
     /// </summary>
     public class Hex : Tile
     {
-        public HexType type = HexType.Plain;
-        public int roads;
+        public HexType Type = HexType.Plain;
+        public int Roads;
 
         public override void _Ready()
         {
-            type = HexType.Plain;
+            Type = HexType.Plain;
         }
 
         /// <summary>
         ///
         /// </summary>
-        public string Inspect()
+        public override string ToString()
         {
-            string s = Enum.GetName(typeof(HexType), type);
-            return $"[{coords.x:F0};{coords.y:F0}]\n -> ({Position.x:F0};{Position.y:F0})\n -> {s}\ne:{Elevation()} h:{Height()} c:{Cost()} r:{roads}";
+            string s = Enum.GetName(typeof(HexType), Type);
+            return $"[{Coordinates.x:F0};{Coordinates.y:F0}]\n -> ({Position.x:F0};{Position.y:F0})\n -> {s}\ne:{Elevation()} h:{Height()} c:{Cost()} r:{Roads}";
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Demo
         /// <param name="orientation"></param>
         public override bool HasRoad(int orientation)
         {
-            return (orientation & roads) > 0;
+            return (orientation & Roads) > 0;
         }
 
         /// <summary>
@@ -53,14 +53,14 @@ namespace Demo
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        /// <param name="d"></param>
-        /// <param name="dt"></param>
+        /// <param name="distance">Distance between from and to</param>
+        /// <param name="distanceThis">Distance between from and this Tile</param>
         /// <exception cref="ArgumentException"><paramref name="from"/> is not <c>Hex</c>.</exception>
-        public override bool BlockLos(Tile from, Tile to, float d, float dt)
+        public override bool BlockLos(Tile from, Tile to, float distance, float distanceThis)
         {
             if (from is Hex fromhex && to is Hex tohex)
             {
-                return BlockLos(fromhex, tohex, d, dt);
+                return BlockLos(fromhex, tohex, distance, distanceThis);
             }
 
             throw new ArgumentException("Somehow ended up with the wrong type of Tiles!");
@@ -71,9 +71,9 @@ namespace Demo
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        /// <param name="d"></param>
-        /// <param name="dt"></param>
-        private bool BlockLos(Hex from, Hex to, float d, float dt)
+        /// <param name="distance">Distance between from and to</param>
+        /// <param name="distanceThis">Distance between from and this Tile</param>
+        private bool BlockLos(Hex from, Hex to, float distance, float distanceThis)
         {
             int h = Height() + Elevation();
             if (h == 0)
@@ -83,10 +83,10 @@ namespace Demo
             int e = from.Elevation();
             if (e > h)
             {
-                return to.Elevation() <= h && (h * dt / (e - h)) >= (d - dt);
+                return to.Elevation() <= h && (h * distanceThis / (e - h)) >= (distance - distanceThis);
             }
             h -= e;
-            return (h * d / dt) >= to.Elevation() - e;
+            return (h * distance / distanceThis) >= to.Elevation() - e;
         }
 
         /// <summary>
@@ -94,10 +94,10 @@ namespace Demo
         /// </summary>
         public void Change()
         {
-            type = (HexType)((((int)type + 2) % 5) - 1);
+            Type = (HexType)((((int)Type + 2) % 5) - 1);
             for (int i = 0; i < 4; i++)
             {
-                EnableOverlay(i + 3, i == (int)type);
+                EnableOverlay(i + 3, i == (int)Type);
             }
         }
 
@@ -106,11 +106,11 @@ namespace Demo
         /// </summary>
         public int Cost()
         {
-            return type switch
+            return Type switch
             {
                 HexType.Plain => 1,
                 HexType.Blocked => -1,
-                _ => (int)type + 1,
+                _ => (int)Type + 1,
             };
         }
 
@@ -119,7 +119,7 @@ namespace Demo
         /// </summary>
         public int Height()
         {
-            return type switch
+            return Type switch
             {
                 HexType.City => 2,
                 HexType.Wood => 1,
@@ -133,7 +133,7 @@ namespace Demo
         /// </summary>
         public int Elevation()
         {
-            return type == HexType.Mountain ? 3 : 0;
+            return Type == HexType.Mountain ? 3 : 0;
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Demo
         /// <param name="category"></param>
         public int RangeModifier(int category)
         {
-            return type == HexType.Mountain ? 1 : 0;
+            return Type == HexType.Mountain ? 1 : 0;
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Demo
         /// <param name="orientation"></param>
         public int AttackModifier(int category, int orientation)
         {
-            return type == HexType.Wood ? 2 : 0;
+            return Type == HexType.Wood ? 2 : 0;
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Demo
         /// <param name="orientation"></param>
         public int DefenseValue(int category, int orientation)
         {
-            return type switch
+            return Type switch
             {
                 HexType.City => 2,
                 HexType.Wood => 1,
@@ -175,11 +175,11 @@ namespace Demo
         ///
         /// </summary>
         /// <param name="b"></param>
-        public void ShowLos(bool b)
+        public void ShowLos(bool b) // TODO - figure out what this is and rename it
         {
             if (b)
             {
-                EnableOverlay(blocked ? 2 : 1, true);
+                EnableOverlay(IsBlocked ? 2 : 1, true);
             }
             else
             {
@@ -192,7 +192,7 @@ namespace Demo
         ///
         /// </summary>
         /// <param name="b"></param>
-        public void ShowMove(bool b)
+        public void ShowMove(bool b) // TODO - figure out what this is and rename it
         {
             EnableOverlay(7, b);
         }
@@ -201,7 +201,7 @@ namespace Demo
         ///
         /// </summary>
         /// <param name="b"></param>
-        public void ShowShort(bool b)
+        public void ShowShort(bool b) // TODO - figure out what this is and rename it
         {
             EnableOverlay(8, b);
         }
@@ -210,7 +210,7 @@ namespace Demo
         ///
         /// </summary>
         /// <param name="b"></param>
-        public void ShowInfluence(bool b)
+        public void ShowInfluence(bool b) // TODO - figure out what this is and rename it
         {
             Sprite s = GetChild<Sprite>(0);
             s.Modulate = new Color(f / 10.0f, 0.0f, 0.0f);

@@ -8,27 +8,27 @@ namespace MonoHexGrid
     /// </summary>
     public abstract class Tile : Node2D
     {
-        public Vector2 coords;
-        public bool blocked;
-        public bool on_map;
+        public Vector2 Coordinates;
+        public bool IsBlocked;
+        public bool IsOnMap;
 
-        public int acc;
-        public float f;
-        public Tile parent;
-        public bool road_march;
-        public int search_count;
+        public int Acc; // TODO - figure out what this is and rename it
+        public float f; // TODO - figure out what this is and rename it
+        public Tile Parent;
+        public bool HasRoadMarchBonus;
+        public int SearchCount;
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="p"></param>
-        /// <param name="c"></param>
+        /// <param name="position">Position in pixels</param>
+        /// <param name="coordinates">Grid coordinates for the hex</param>
         /// <param name="o"></param>
-        public void Configure(Vector2 p, Vector2 c, List<string> o)
+        public void Configure(Vector2 position, Vector2 coordinates, List<string> o)
         {
-            Position = p;
-            coords = c;
-            on_map = true;
+            Position = position;
+            Coordinates = coordinates;
+            IsOnMap = true;
 
             foreach (string t in o)
             {
@@ -49,24 +49,23 @@ namespace MonoHexGrid
         public abstract bool HasRoad(int orientation);
 
         /// <summary>
-        /// is the line of sight blocked from a Tile to another, d beeing the distance between from and
-        /// to, dt beeing the distance between from and this Tile
+        /// is the line of sight blocked from a Tile to another
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        /// <param name="d"></param>
-        /// <param name="dt"></param>
-        public abstract bool BlockLos(Tile from, Tile to, float d, float dt);
+        /// <param name="distance">Distance between from and to</param>
+        /// <param name="distanceThis">Distance between from and this Tile</param>
+        public abstract bool BlockLos(Tile from, Tile to, float distance, float distanceThis);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="i"></param>
-        /// <param name="v"></param>
-        public void EnableOverlay(int i, bool v)
+        /// <param name="index"></param>
+        /// <param name="visibility"></param>
+        public void EnableOverlay(int index, bool visibility)
         {
-            GetChild<Node2D>(i).Visible = v;
-            if (v)
+            GetChild<Node2D>(index).Visible = visibility;
+            if (visibility)
             {
                 Visible = true;
             }
@@ -87,10 +86,10 @@ namespace MonoHexGrid
         /// <summary>
         ///
         /// </summary>
-        /// <param name="i"></param>
-        public bool IsOverlayOn(int i)
+        /// <param name="index"></param>
+        public bool IsOverlayOn(int index)
         {
-            return GetChild<Node2D>(i).Visible;
+            return GetChild<Node2D>(index).Visible;
         }
     }
 }

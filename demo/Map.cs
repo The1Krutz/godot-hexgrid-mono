@@ -10,36 +10,35 @@ namespace Demo
     public class Map : Sprite
     {
         [Signal]
-        public delegate void hex_touched(Vector2 pos, Vector2 hex, int key);
+        public delegate void HexTouched(Vector2 position, Vector2 hex, int key);
 
-        public const string MAPH = "res://demo/assets/map-h.png";
-        public const string MAPV = "res://demo/assets/map-v.png";
-        public const string BLOCK = "res://demo/assets/block.png";
-        public const string BLACK = "res://demo/assets/black.png";
-        public const string MOVE = "res://demo/assets/move.png";
-        public const string SHORT = "res://demo/assets/short.png";
-        public const string RED = "res://demo/assets/red.png";
-        public const string GREEN = "res://demo/assets/green.png";
-        public const string TREE = "res://demo/assets/tree.png";
-        public const string CITY = "res://demo/assets/city.png";
-        public const string MOUNT = "res://demo/assets/mountain.png";
+        private const string _mapHorizontal = "res://demo/assets/map-h.png";
+        private const string _mapVertical = "res://demo/assets/map-v.png";
+        private const string _hexBlocked = "res://demo/assets/block.png";
+        private const string _hexBlack = "res://demo/assets/black.png";
+        private const string _hexMove = "res://demo/assets/move.png";
+        private const string _hexMovePath = "res://demo/assets/short.png";
+        private const string _hexRed = "res://demo/assets/red.png";
+        private const string _hexGreen = "res://demo/assets/green.png";
+        private const string _hexTree = "res://demo/assets/tree.png";
+        private const string _hexCity = "res://demo/assets/city.png";
+        private const string _hexMountain = "res://demo/assets/mountain.png";
 
-        public Sprite drag;
-
-        public HexBoard board;
-        public Vector2 prev;
-        public Dictionary<int, Tile> hexes = new Dictionary<int, Tile>();
-        public int hex_rotation;
-        private Vector2 p0;
-        private Vector2 p1;
-        public List<Tile> los = new List<Tile>();
-        public List<Tile> move = new List<Tile>();
-        public List<Tile> shoort = new List<Tile>();
-        public List<Tile> influence = new List<Tile>();
-        public Unit unit;
-        public bool show_los;
-        public bool show_move;
-        public bool show_influence;
+        private Sprite _drag;
+        private HexBoard _board;
+        private Dictionary<int, Tile> _mapHexes = new Dictionary<int, Tile>();
+        private List<Tile> _losTiles = new List<Tile>();
+        private List<Tile> _moveTiles = new List<Tile>();
+        private List<Tile> _movePathTiles = new List<Tile>();
+        private List<Tile> _influenceTiles = new List<Tile>();
+        private Unit _unit;
+        private Vector2 _p0;
+        private Vector2 _p1;
+        private Vector2 _previous;
+        private int _hexRotation;
+        private bool _showLos;
+        private bool _showMove;
+        private bool _showInfluence;
 
         // $etc
         private Sprite _tank;
@@ -55,8 +54,8 @@ namespace Demo
             _hexes = GetNode<Node>("Hexes");
             _los = GetNode<Los>("Los");
 
-            drag = null;
-            unit = new Unit();
+            _drag = null;
+            _unit = new Unit();
             RotateMap();
         }
 
@@ -65,17 +64,17 @@ namespace Demo
         /// </summary>
         public void Reset()
         {
-            los.Clear();
-            move.Clear();
-            shoort.Clear();
-            influence.Clear();
-            hexes.Clear();
-            hexes[-1] = new Hex(); // off map
-            p0 = new Vector2(0, 0);
-            p1 = new Vector2(3, 3);
+            _losTiles.Clear();
+            _moveTiles.Clear();
+            _movePathTiles.Clear();
+            _influenceTiles.Clear();
+            _mapHexes.Clear();
+            _mapHexes[-1] = new Hex(); // off map
+            _p0 = new Vector2(0, 0);
+            _p1 = new Vector2(3, 3);
 
-            _tank.Position = board.CenterOf(p0);
-            _target.Position = board.CenterOf(p1);
+            _tank.Position = _board.CenterOf(_p0);
+            _target.Position = _board.CenterOf(_p1);
             foreach (Node hex in _hexes.GetChildren())
             {
                 _hexes.RemoveChild(hex);
@@ -89,7 +88,7 @@ namespace Demo
         /// </summary>
         public void RotateMap()
         {
-            Texture = GD.Load<Texture>(IsInstanceValid(board) && board.v ? MAPH : MAPV);
+            Texture = GD.Load<Texture>(IsInstanceValid(_board) && _board.HasVerticalEdge ? _mapHorizontal : _mapVertical);
             Configure();
             Reset();
         }
@@ -97,14 +96,14 @@ namespace Demo
         /// <summary>
         ///
         /// </summary>
-        /// <param name="l"></param>
-        /// <param name="m"></param>
-        /// <param name="i"></param>
-        public void SetMode(bool l, bool m, bool i)
+        /// <param name="showLos"></param>
+        /// <param name="showMove"></param>
+        /// <param name="showInfluence"></param>
+        public void SetMode(bool showLos, bool showMove, bool showInfluence)
         {
-            show_los = l;
-            show_move = m;
-            show_influence = i;
+            _showLos = showLos;
+            _showMove = showMove;
+            _showInfluence = showInfluence;
             Compute();
         }
 
@@ -113,7 +112,7 @@ namespace Demo
         /// </summary>
         public void Configure()
         {
-            bool v = IsInstanceValid(board) && board.v;
+            bool v = IsInstanceValid(_board) && _board.HasVerticalEdge;
             Vector2 v0 = new Vector2(50, 100);
             if (Centered)
             {
@@ -130,13 +129,13 @@ namespace Demo
             }
             if (v)
             {
-                hex_rotation = 30;
-                board = new HexBoard(10, 4, 100, v0, false, GetTile);
+                _hexRotation = 30;
+                _board = new HexBoard(10, 4, 100, v0, false, GetTile);
             }
             else
             {
-                hex_rotation = 0;
-                board = new HexBoard(10, 7, 100, v0, true, GetTile);
+                _hexRotation = 0;
+                _board = new HexBoard(10, 7, 100, v0, true, GetTile);
             }
         }
 
@@ -161,9 +160,9 @@ namespace Demo
         /// </summary>
         public void OnMouseMove()
         {
-            if (drag != null)
+            if (_drag != null)
             {
-                drag.Position = GetLocalMousePosition();
+                _drag.Position = GetLocalMousePosition();
             }
         }
 
@@ -174,47 +173,47 @@ namespace Demo
         public bool OnClick(bool pressed)
         {
             Vector2 pos = GetLocalMousePosition();
-            Vector2 coords = board.ToMap(pos);
+            Vector2 coords = _board.ToMap(pos);
             if (pressed)
             {
                 Notify(pos, coords);
-                prev = coords;
-                if (board.ToMap(_tank.Position) == coords)
+                _previous = coords;
+                if (_board.ToMap(_tank.Position) == coords)
                 {
-                    drag = _tank;
+                    _drag = _tank;
                 }
-                else if (board.ToMap(_target.Position) == coords)
+                else if (_board.ToMap(_target.Position) == coords)
                 {
-                    drag = _target;
+                    _drag = _target;
                 }
                 else
                 {
                     return true;
                 }
             }
-            else if (drag != null)
+            else if (_drag != null)
             {
-                if (board.IsOnMap(coords))
+                if (_board.IsOnMap(coords))
                 {
-                    drag.Position = board.CenterOf(coords);
-                    if (drag == _tank)
+                    _drag.Position = _board.CenterOf(coords);
+                    if (_drag == _tank)
                     {
-                        p0 = coords;
+                        _p0 = coords;
                     }
                     else
                     {
-                        p1 = coords;
+                        _p1 = coords;
                     }
                     Notify(pos, coords);
                     Compute();
                 }
                 else
                 {
-                    drag.Position = board.CenterOf(prev);
+                    _drag.Position = _board.CenterOf(_previous);
                 }
-                drag = null;
+                _drag = null;
             }
-            else if (coords == prev && board.IsOnMap(coords))
+            else if (coords == _previous && _board.IsOnMap(coords))
             {
                 ChangeTile(coords, pos);
             }
@@ -224,34 +223,34 @@ namespace Demo
         /// <summary>
         ///
         /// </summary>
-        /// <param name="coords"></param>
-        /// <param name="pos"></param>
-        public void ChangeTile(Vector2 coords, Vector2 pos)
+        /// <param name="coordinates"></param>
+        /// <param name="position"></param>
+        public void ChangeTile(Vector2 coordinates, Vector2 position)
         {
-            Hex hex = (Hex)board.GetTile(coords);
+            Hex hex = (Hex)_board.GetTile(coordinates);
             hex.Change();
-            Notify(pos, coords);
+            Notify(position, coordinates);
             Compute();
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="coords"></param>
-        /// <param name="k"></param>
-        public Tile GetTile(Vector2 coords, int k)
+        /// <param name="coordinates"></param>
+        /// <param name="key"></param>
+        public Tile GetTile(Vector2 coordinates, int key)
         {
-            if (hexes.ContainsKey(k))
+            if (_mapHexes.ContainsKey(key))
             {
-                return hexes[k];
+                return _mapHexes[key];
             }
             Hex hex = new Hex
             {
-                roads = GetRoad(k),
-                RotationDegrees = hex_rotation
+                Roads = GetRoad(key),
+                RotationDegrees = _hexRotation
             };
-            hex.Configure(board.CenterOf(coords), coords, new List<string>() { RED, GREEN, BLACK, CITY, TREE, MOUNT, BLOCK, MOVE, SHORT });
-            hexes[k] = hex;
+            hex.Configure(_board.CenterOf(coordinates), coordinates, new List<string>() { _hexRed, _hexGreen, _hexBlack, _hexCity, _hexTree, _hexMountain, _hexBlocked, _hexMove, _hexMovePath });
+            _mapHexes[key] = hex;
             _hexes.AddChild(hex);
             return hex;
         }
@@ -259,10 +258,10 @@ namespace Demo
         /// <summary>
         ///
         /// </summary>
-        /// <param name="k"></param>
-        public int GetRoad(int k)
+        /// <param name="key"></param>
+        public int GetRoad(int key)
         {
-            if (!board.v)
+            if (!_board.HasVerticalEdge)
             {
                 return 0;
             }
@@ -282,7 +281,7 @@ namespace Demo
 
             foreach (MonoHexGrid.Orientation orientation in RoadsLookup.Keys)
             {
-                v += RoadsLookup[orientation].Contains(k) ? (int)orientation : 0;
+                v += RoadsLookup[orientation].Contains(key) ? (int)orientation : 0;
             }
 
             return v;
@@ -295,7 +294,7 @@ namespace Demo
         /// <param name="coords"></param>
         public void Notify(Vector2 pos, Vector2 coords)
         {
-            EmitSignal(nameof(hex_touched), pos, board.GetTile(coords), board.IsOnMap(coords) ? board.Key(coords) : -1);
+            EmitSignal(nameof(HexTouched), pos, _board.GetTile(coords), _board.IsOnMap(coords) ? _board.Key(coords) : -1);
         }
 
         /// <summary>
@@ -304,49 +303,49 @@ namespace Demo
         public void Compute()
         {
             _los.Visible = false;
-            foreach (Hex hex in los)
+            foreach (Hex hex in _losTiles)
             {
                 hex.ShowLos(false);
             }
-            if (show_los)
+            if (_showLos)
             {
                 _los.Visible = true;
-                Vector2 ct = board.LineOfSight(p0, p1, los);
+                Vector2 ct = _board.LineOfSight(_p0, _p1, _losTiles);
                 _los.Setup(_tank.Position, _target.Position, ct);
-                foreach (Hex hex in los)
+                foreach (Hex hex in _losTiles)
                 {
                     hex.ShowLos(true);
                 }
             }
-            foreach (Hex hex in move)
+            foreach (Hex hex in _moveTiles)
             {
                 hex.ShowMove(false);
             }
-            foreach (Hex hex in shoort)
+            foreach (Hex hex in _movePathTiles)
             {
                 hex.ShowShort(false);
             }
-            if (show_move)
+            if (_showMove)
             {
-                board.PossibleMoves(unit, board.GetTile(p0), move);
-                board.ShortestPath(unit, board.GetTile(p0), board.GetTile(p1), shoort);
-                foreach (Hex hex in move)
+                _board.PossibleMoves(_unit, _board.GetTile(_p0), _moveTiles);
+                _board.ShortestPath(_unit, _board.GetTile(_p0), _board.GetTile(_p1), _movePathTiles);
+                foreach (Hex hex in _moveTiles)
                 {
                     hex.ShowMove(true);
                 }
-                foreach (Hex hex in shoort)
+                foreach (Hex hex in _movePathTiles)
                 {
                     hex.ShowShort(true);
                 }
             }
-            foreach (Hex hex in influence)
+            foreach (Hex hex in _influenceTiles)
             {
                 hex.ShowInfluence(false);
             }
-            if (show_influence)
+            if (_showInfluence)
             {
-                board.RangeOfInfluence(unit, board.GetTile(p0), 0, influence);
-                foreach (Hex hex in influence)
+                _board.RangeOfInfluence(_unit, _board.GetTile(_p0), 0, _influenceTiles);
+                foreach (Hex hex in _influenceTiles)
                 {
                     hex.ShowInfluence(true);
                 }

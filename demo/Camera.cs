@@ -7,31 +7,31 @@ namespace Demo
     /// </summary>
     public class Camera : Camera2D
     {
-        public Vector2 margin;
-        public Vector2 window;
-        public Vector2 map_center;
-        public Vector2 texture_size;
-        public Vector2 zoom_boundaries;
+        private Vector2 _margin;
+        private Vector2 _window;
+        private Vector2 _mapCenter;
+        private Vector2 _textureSize;
+        private Vector2 _zoomBoundaries;
 
         public override void _Ready()
         {
-            margin = new Vector2(0, 0);
+            _margin = new Vector2(0, 0);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="w"></param>
-        /// <param name="c"></param>
-        /// <param name="ts"></param>
-        public void Configure(Vector2 w, Vector2 c, Vector2 ts)
+        /// <param name="window"></param>
+        /// <param name="mapCenter"></param>
+        /// <param name="textureSize"></param>
+        public void Configure(Vector2 window, Vector2 mapCenter, Vector2 textureSize)
         {
-            window = w;
-            map_center = c;
-            texture_size = ts;
-            float zout = Mathf.Max((texture_size.x + margin.x) / window.x, (texture_size.y + margin.y) / window.y);
-            zoom_boundaries = new Vector2(zout - 0.5f, zout);
-            UpdateCamera(0, 0, zoom_boundaries.y);
+            _window = window;
+            _mapCenter = mapCenter;
+            _textureSize = textureSize;
+            float zout = Mathf.Max((_textureSize.x + _margin.x) / _window.x, (_textureSize.y + _margin.y) / _window.y);
+            _zoomBoundaries = new Vector2(zout - 0.5f, zout);
+            UpdateCamera(0, 0, _zoomBoundaries.y);
         }
 
         /// <summary>
@@ -44,27 +44,27 @@ namespace Demo
         {
             if (z != 0)
             {
-                Zoom = new Vector2(Mathf.Clamp(Zoom.x + z, zoom_boundaries.x, zoom_boundaries.y), Zoom.x);
+                Zoom = new Vector2(Mathf.Clamp(Zoom.x + z, _zoomBoundaries.x, _zoomBoundaries.y), Zoom.x);
             }
             Vector2 posUpdate = Position + new Vector2(x, y);
-            Vector2 delta = texture_size + margin - (window * Zoom.x);
+            Vector2 delta = _textureSize + _margin - (_window * Zoom.x);
             if (delta.x <= 0)
             {
-                posUpdate.x = map_center.x;
+                posUpdate.x = _mapCenter.x;
             }
             else
             {
                 int dx = (int)(delta.x / 2);
-                posUpdate.x = Mathf.Clamp(Position.x, map_center.x - dx, map_center.x + dx);
+                posUpdate.x = Mathf.Clamp(Position.x, _mapCenter.x - dx, _mapCenter.x + dx);
             }
             if (delta.y <= 0)
             {
-                posUpdate.y = map_center.y;
+                posUpdate.y = _mapCenter.y;
             }
             else
             {
                 int dy = (int)(delta.y / 2);
-                posUpdate.y = Mathf.Clamp(Position.y, map_center.y - dy, map_center.y + dy);
+                posUpdate.y = Mathf.Clamp(Position.y, _mapCenter.y - dy, _mapCenter.y + dy);
             }
 
             Position = posUpdate;
