@@ -45,7 +45,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Godot Hexgrid"
-run/main_scene="res://demo/Main.tscn"
+run/main_scene="res://demo/Main_gd.tscn"
 config/icon="res://icon.png"
 
 [display]
