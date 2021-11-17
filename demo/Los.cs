@@ -1,25 +1,41 @@
 using Godot;
 
-namespace Demo {
-  public class Los : Node2D {
-    public Vector2 p0;
-    public Vector2 p1;
-    public Vector2 p2;
+namespace Demo
+{
+    /// <summary>
+    ///
+    /// </summary>
+    public class Los : Node2D
+    {
+        private Vector2 _p0;
+        private Vector2 _p1;
+        private Vector2 _p2;
 
-    public override void _Draw() {
-      if (p2.x == -1) {
-        DrawLine(p0, p1, Color.Color8(0, 255, 0));
-      } else {
-        DrawLine(p0, p2, Color.Color8(0, 255, 0));
-        DrawLine(p2, p1, Color.Color8(255, 0, 0));
-      }
-    }
+        public override void _Draw()
+        {
+            if (_p2.x == -1)
+            {
+                DrawLine(_p0, _p1, Color.Color8(0, 255, 0));
+            }
+            else
+            {
+                DrawLine(_p0, _p2, Color.Color8(0, 255, 0));
+                DrawLine(_p2, _p1, Color.Color8(255, 0, 0));
+            }
+        }
 
-    public void Setup(Vector2 v0, Vector2 v1, Vector2 v2) {
-      p0 = v0;
-      p1 = v1;
-      p2 = v2;
-      Update();
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="v0"></param>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        public void Setup(Vector2 v0, Vector2 v1, Vector2 v2)
+        {
+            _p0 = v0;
+            _p1 = v1;
+            _p2 = v2;
+            Update();
+        }
     }
-  }
 }
