@@ -188,13 +188,13 @@ namespace Demo {
 
       Dictionary<MonoHexGrid.Orientation, List<int>> RoadsLookup = new Dictionary<MonoHexGrid.Orientation, List<int>> {
         [MonoHexGrid.Orientation.E] = new List<int> { 19, 20, 21, 23, 24, 42, 43, 44, 45, 46, 47 },
-        [MonoHexGrid.Orientation.NE] = new List<int> { 7, 16, 25, 32 },
-        [MonoHexGrid.Orientation.N] = new List<int>(),
-        [MonoHexGrid.Orientation.NW] = new List<int> { 32, 42, 52, 62 },
-        [MonoHexGrid.Orientation.W] = new List<int> { 19, 20, 21, 22, 24, 25, 43, 44, 45, 46, 47 },
-        [MonoHexGrid.Orientation.SW] = new List<int> { 7, 16, 23 },
+        [MonoHexGrid.Orientation.SE] = new List<int> { 22, 32, 42, 52, 62 },
         [MonoHexGrid.Orientation.S] = new List<int>(),
-        [MonoHexGrid.Orientation.SE] = new List<int> { 22, 32, 42, 52, 62 }
+        [MonoHexGrid.Orientation.SW] = new List<int> { 7, 16, 23 },
+        [MonoHexGrid.Orientation.W] = new List<int> { 19, 20, 21, 22, 24, 25, 43, 44, 45, 46, 47 },
+        [MonoHexGrid.Orientation.NW] = new List<int> { 32, 42, 52, 62 },
+        [MonoHexGrid.Orientation.N] = new List<int>(),
+        [MonoHexGrid.Orientation.NE] = new List<int> { 7, 16, 25, 32 },
       };
 
       foreach (MonoHexGrid.Orientation orientation in RoadsLookup.Keys) {
