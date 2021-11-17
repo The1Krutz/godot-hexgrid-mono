@@ -419,7 +419,7 @@ namespace MonoHexGrid {
         }
         tiles.Add(t);
         t.blocked = los_blocked;
-        los_blocked = los_blocked || t.block_los(from, to, d, Distance(p0, q));
+        los_blocked = los_blocked || t.BlockLos(from, to, d, Distance(p0, q));
       }
       return ret;
     }
@@ -450,7 +450,7 @@ namespace MonoHexGrid {
         if (t.on_map) {
           tiles.Add(t);
           t.blocked = los_blocked;
-          if (t.block_los(from, to, d, Distance(p0, q))) {
+          if (t.BlockLos(from, to, d, Distance(p0, q))) {
             blocked |= 0x01;
           }
         } else {
@@ -469,7 +469,7 @@ namespace MonoHexGrid {
         if (t.on_map) {
           tiles.Add(t);
           t.blocked = los_blocked;
-          if (t.block_los(from, to, d, Distance(p0, q))) { blocked |= 0x02; }
+          if (t.BlockLos(from, to, d, Distance(p0, q))) { blocked |= 0x02; }
         } else {
           blocked |= 0x02;
           idx = 3;
@@ -493,7 +493,7 @@ namespace MonoHexGrid {
           }
           contact = true;
         }
-        los_blocked = t.blocked || t.block_los(from, to, d, Distance(p0, q));
+        los_blocked = t.blocked || t.BlockLos(from, to, d, Distance(p0, q));
       }
       return ret;
     }
@@ -579,13 +579,13 @@ namespace MonoHexGrid {
     /// </summary>
     public int PossibleMoves(Piece piece, Tile from, List<Tile> tiles) {
       tiles.Clear();
-      if (piece.get_mp() <= 0 || !IsOnMap(from.coords)) {
+      if (piece.GetMp() <= 0 || !IsOnMap(from.coords)) {
         return 0;
       }
-      int road_march_bonus = piece.road_march_bonus();
+      int road_march_bonus = piece.RoadMarchBonus();
       search_count++;
       from.parent = null;
-      from.acc = piece.get_mp();
+      from.acc = piece.GetMp();
       from.search_count = search_count;
       from.road_march = road_march_bonus > 0;
       stack.Add(from);
@@ -601,14 +601,14 @@ namespace MonoHexGrid {
             continue;
           }
           int o = ToOrientation(Angle(src, dst));
-          int cost = piece.move_cost(src, dst, o);
+          int cost = piece.MoveCost(src, dst, o);
           if (cost == -1) {
             continue;
           } // impracticable
           int r = src.acc - cost;
-          bool rm = src.road_march && src.has_road(o);
+          bool rm = src.road_march && src.HasRoad(o);
           // not enough MP even with RM, maybe first move allowed
-          if ((r + (rm ? road_march_bonus : 0)) < 0 && !(src == from && piece.at_least_one_tile(dst))) {
+          if ((r + (rm ? road_march_bonus : 0)) < 0 && !(src == from && piece.AtLeastOneTile(dst))) {
             continue;
           }
           if (dst.search_count != search_count) {
@@ -634,7 +634,7 @@ namespace MonoHexGrid {
       if (from == to || !IsOnMap(from.coords) || !IsOnMap(to.coords)) {
         return tiles.Count;
       }
-      int road_march_bonus = piece.road_march_bonus();
+      int road_march_bonus = piece.RoadMarchBonus();
       search_count++;
       from.acc = 0;
       from.parent = null;
@@ -653,13 +653,13 @@ namespace MonoHexGrid {
             continue;
           }
           int o = ToOrientation(Angle(src, dst));
-          int cost = piece.move_cost(src, dst, o);
+          int cost = piece.MoveCost(src, dst, o);
           if (cost == -1) {
             continue; // impracticable
           }
           cost += src.acc;
           float total = cost + Distance(dst.coords, to.coords);
-          bool rm = src.road_march && src.has_road(o);
+          bool rm = src.road_march && src.HasRoad(o);
           if (rm) {
             total -= road_march_bonus;
           }
@@ -705,7 +705,7 @@ namespace MonoHexGrid {
 
     public int RangeOfInfluence(Piece piece, Tile from, int category, List<Tile> tiles) {
       tiles.Clear();
-      int max_range = piece.max_range_of_fire(category, from);
+      int max_range = piece.MaxRangeOfFire(category, from);
       if (!IsOnMap(from.coords)) {
         return 0;
       }
@@ -733,7 +733,7 @@ namespace MonoHexGrid {
             continue;
           }
           int o = DistantOrientation(from, dst);
-          dst.f = piece.volume_of_fire(category, d, from, o, dst, DistantOpposite(o));
+          dst.f = piece.VolumeOfFire(category, d, from, o, dst, DistantOpposite(o));
           stack.Add(dst);
           tiles.Add(dst);
         }

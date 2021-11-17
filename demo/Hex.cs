@@ -11,7 +11,7 @@ namespace Demo {
       type = -1;
     }
 
-    public string inspect() {
+    public string Inspect() {
       string s = "plain";
       if (type == 0) {
         s = "city";
@@ -22,45 +22,45 @@ namespace Demo {
       } else if (type == 3) {
         s = "blocked";
       }
-      return $"[{coords.x:F0};{coords.y:F0}]\n -> ({Position.x:F0};{Position.y:F0})\n -> {s}\ne:{elevation()} h:{height()} c:{cost()} r:{roads}";
+      return $"[{coords.x:F0};{coords.y:F0}]\n -> ({Position.x:F0};{Position.y:F0})\n -> {s}\ne:{Elevation()} h:{Height()} c:{Cost()} r:{roads}";
     }
 
-    public override bool has_road(int orientation) {
+    public override bool HasRoad(int orientation) {
       return (orientation & roads) > 0;
     }
 
-    public override bool block_los(Tile from, Tile to, float d, float dt) {
+    public override bool BlockLos(Tile from, Tile to, float d, float dt) {
       if (from is Hex fromhex && to is Hex tohex) {
-        return block_los(fromhex, tohex, d, dt);
+        return BlockLos(fromhex, tohex, d, dt);
       }
 
       throw new ArgumentException("Somehow ended up with the wrong type of Tiles!");
     }
 
-    private bool block_los(Hex from, Hex to, float d, float dt) {
-      int h = height() + elevation();
+    private bool BlockLos(Hex from, Hex to, float d, float dt) {
+      int h = Height() + Elevation();
       if (h == 0) {
         return false;
       }
-      int e = from.elevation();
+      int e = from.Elevation();
       if (e > h) {
-        if (to.elevation() > h) {
+        if (to.Elevation() > h) {
           return false;
         }
         return (h * dt / (e - h)) >= (d - dt);
       }
       h -= e;
-      return (h * d / dt) >= to.elevation() - e;
+      return (h * d / dt) >= to.Elevation() - e;
     }
 
-    public void change() {
+    public void Change() {
       type = ((type + 2) % 5) - 1;
       for (int i = 0; i < 4; i++) {
-        enable_overlay(i + 3, i == type);
+        EnableOverlay(i + 3, i == type);
       }
     }
 
-    public int cost() {
+    public int Cost() {
       if (type == -1) {
         return 1;
       } else if (type == 3) {
@@ -69,7 +69,7 @@ namespace Demo {
       return type + 1;
     }
 
-    public int height() {
+    public int Height() {
       if (type == 0) {
         return 2;
       } else if (type == 1) {
@@ -80,22 +80,22 @@ namespace Demo {
       return 0;
     }
 
-    public int elevation() {
+    public int Elevation() {
       if (type == 2) {
         return 3;
       }
       return 0;
     }
 
-    public int range_modifier(int category) {
+    public int RangeModifier(int category) {
       return type == 2 ? 1 : 0;
     }
 
-    public int attack_modifier(int category, int orientation) {
+    public int AttackModifier(int category, int orientation) {
       return type == 1 ? 2 : 0;
     }
 
-    public int defense_value(int category, int orientation) {
+    public int DefenseValue(int category, int orientation) {
       if (type == 0) {
         return 2;
       } else if (type == 1) {
@@ -106,27 +106,27 @@ namespace Demo {
       return 0;
     }
 
-    public void show_los(bool b) {
+    public void ShowLos(bool b) {
       if (b) {
-        enable_overlay(blocked ? 2 : 1, true);
+        EnableOverlay(blocked ? 2 : 1, true);
       } else {
-        enable_overlay(1, false);
-        enable_overlay(2, false);
+        EnableOverlay(1, false);
+        EnableOverlay(2, false);
       }
     }
 
-    public void show_move(bool b) {
-      enable_overlay(7, b);
+    public void ShowMove(bool b) {
+      EnableOverlay(7, b);
     }
 
-    public void show_short(bool b) {
-      enable_overlay(8, b);
+    public void ShowShort(bool b) {
+      EnableOverlay(8, b);
     }
 
-    public void show_influence(bool b) {
+    public void ShowInfluence(bool b) {
       Sprite s = GetChild<Sprite>(0);
       s.Modulate = new Color(f / 10.0f, 0.0f, 0.0f);
-      enable_overlay(0, b);
+      EnableOverlay(0, b);
     }
   }
 }

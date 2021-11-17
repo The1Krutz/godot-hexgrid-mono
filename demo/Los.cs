@@ -15,7 +15,7 @@ namespace Demo {
       }
     }
 
-    public void setup(Vector2 v0, Vector2 v1, Vector2 v2) {
+    public void Setup(Vector2 v0, Vector2 v1, Vector2 v2) {
       p0 = v0;
       p1 = v1;
       p2 = v2;

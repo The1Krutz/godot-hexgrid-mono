@@ -13,7 +13,7 @@ namespace MonoHexGrid {
     public bool road_march;
     public int search_count;
 
-    public void configure(Vector2 p, Vector2 c, List<string> o) {
+    public void Configure(Vector2 p, Vector2 c, List<string> o) {
       Position = p;
       coords = c;
       on_map = true;
@@ -31,15 +31,15 @@ namespace MonoHexGrid {
     /// <summary>
     /// is there a road with given orientation that drives out of that Tile
     /// </summary>
-    public abstract bool has_road(int orientation);
+    public abstract bool HasRoad(int orientation);
 
     /// <summary>
     /// is the line of sight blocked from a Tile to another, d beeing the distance between from and
     /// to, dt beeing the distance between from and this Tile
     /// </summary>
-    public abstract bool block_los(Tile from, Tile to, float d, float dt);
+    public abstract bool BlockLos(Tile from, Tile to, float d, float dt);
 
-    public void enable_overlay(int i, bool v) {
+    public void EnableOverlay(int i, bool v) {
       GetChild<Node2D>(i).Visible = v;
       if (v) {
         Visible = true;
@@ -54,7 +54,7 @@ namespace MonoHexGrid {
       }
     }
 
-    public bool is_overlay_on(int i) {
+    public bool IsOverlayOn(int i) {
       return GetChild<Node2D>(i).Visible;
     }
   }

@@ -12,16 +12,16 @@ namespace Demo {
       margin = new Vector2(0, 0);
     }
 
-    public void configure(Vector2 w, Vector2 c, Vector2 ts) {
+    public void Configure(Vector2 w, Vector2 c, Vector2 ts) {
       window = w;
       map_center = c;
       texture_size = ts;
       float zout = Mathf.Max((texture_size.x + margin.x) / window.x, (texture_size.y + margin.y) / window.y);
       zoom_boundaries = new Vector2(zout - 0.5f, zout);
-      update_camera(0, 0, zoom_boundaries.y);
+      UpdateCamera(0, 0, zoom_boundaries.y);
     }
 
-    public void update_camera(float x, float y, float z) {
+    public void UpdateCamera(float x, float y, float z) {
       if (z != 0) {
         Zoom = new Vector2(Mathf.Clamp(Zoom.x + z, zoom_boundaries.x, zoom_boundaries.y), Zoom.x);
       }

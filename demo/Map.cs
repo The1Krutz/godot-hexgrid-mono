@@ -52,7 +52,7 @@ namespace Demo {
 
       drag = null;
       unit = new Unit();
-      rotate_map();
+      RotateMap();
     }
 
     public void Reset() {
@@ -71,23 +71,23 @@ namespace Demo {
         _hexes.RemoveChild(hex);
         hex.QueueFree();
       }
-      compute();
+      Compute();
     }
 
-    public void rotate_map() {
+    public void RotateMap() {
       Texture = GD.Load<Texture>(IsInstanceValid(board) && board.v ? MAPH : MAPV);
-      configure();
+      Configure();
       Reset();
     }
 
-    public void set_mode(bool l, bool m, bool i) {
+    public void SetMode(bool l, bool m, bool i) {
       show_los = l;
       show_move = m;
       show_influence = i;
-      compute();
+      Compute();
     }
 
-    public void configure() {
+    public void Configure() {
       bool v = IsInstanceValid(board) && board.v;
       Vector2 v0 = new Vector2(50, 100);
       if (Centered) {
@@ -101,32 +101,32 @@ namespace Demo {
       }
       if (v) {
         hex_rotation = 30;
-        board = new HexBoard(10, 4, 100, v0, false, get_tile);
+        board = new HexBoard(10, 4, 100, v0, false, GetTile);
       } else {
         hex_rotation = 0;
-        board = new HexBoard(10, 7, 100, v0, true, get_tile);
+        board = new HexBoard(10, 7, 100, v0, true, GetTile);
       }
     }
 
-    public Vector2 texture_size() {
+    public Vector2 TextureSize() {
       return Texture.GetSize();
     }
 
-    public Vector2 center() {
+    public Vector2 Center() {
       return Centered ? new Vector2(0, 0) : Texture.GetSize() / 2;
     }
 
-    public void on_mouse_move() {
+    public void OnMouseMove() {
       if (drag != null) {
         drag.Position = GetLocalMousePosition();
       }
     }
 
-    public bool on_click(bool pressed) {
+    public bool OnClick(bool pressed) {
       Vector2 pos = GetLocalMousePosition();
       Vector2 coords = board.ToMap(pos);
       if (pressed) {
-        notify(pos, coords);
+        Notify(pos, coords);
         prev = coords;
         if (board.ToMap(_tank.Position) == coords) {
           drag = _tank;
@@ -144,43 +144,43 @@ namespace Demo {
             } else {
               p1 = coords;
             }
-            notify(pos, coords);
-            compute();
+            Notify(pos, coords);
+            Compute();
           } else {
             drag.Position = board.CenterOf(prev);
           }
           drag = null;
         } else {
           if (coords == prev && board.IsOnMap(coords)) {
-            change_tile(coords, pos);
+            ChangeTile(coords, pos);
           }
         }
       }
       return false;
     }
 
-    public void change_tile(Vector2 coords, Vector2 pos) {
+    public void ChangeTile(Vector2 coords, Vector2 pos) {
       Hex hex = (Hex)board.GetTile(coords);
-      hex.change();
-      notify(pos, coords);
-      compute();
+      hex.Change();
+      Notify(pos, coords);
+      Compute();
     }
 
-    public Tile get_tile(Vector2 coords, int k) {
+    public Tile GetTile(Vector2 coords, int k) {
       if (hexes.ContainsKey(k)) {
         return hexes[k];
       }
       Hex hex = new Hex {
-        roads = get_road(k),
+        roads = GetRoad(k),
         RotationDegrees = hex_rotation
       };
-      hex.configure(board.CenterOf(coords), coords, new List<string>() { RED, GREEN, BLACK, CITY, TREE, MOUNT, BLOCK, MOVE, SHORT });
+      hex.Configure(board.CenterOf(coords), coords, new List<string>() { RED, GREEN, BLACK, CITY, TREE, MOUNT, BLOCK, MOVE, SHORT });
       hexes[k] = hex;
       _hexes.AddChild(hex);
       return hex;
     }
 
-    public int get_road(int k) {
+    public int GetRoad(int k) {
       if (!board.v) {
         return 0;
       }
@@ -204,46 +204,46 @@ namespace Demo {
       return v;
     }
 
-    public void notify(Vector2 pos, Vector2 coords) {
+    public void Notify(Vector2 pos, Vector2 coords) {
       EmitSignal(nameof(hex_touched), pos, board.GetTile(coords), board.IsOnMap(coords) ? board.Key(coords) : -1);
     }
 
-    public void compute() {
+    public void Compute() {
       _los.Visible = false;
       foreach (Hex hex in los) {
-        hex.show_los(false);
+        hex.ShowLos(false);
       }
       if (show_los) {
         _los.Visible = true;
         Vector2 ct = board.LineOfSight(p0, p1, los);
-        _los.setup(_tank.Position, _target.Position, ct);
+        _los.Setup(_tank.Position, _target.Position, ct);
         foreach (Hex hex in los) {
-          hex.show_los(true);
+          hex.ShowLos(true);
         }
       }
       foreach (Hex hex in move) {
-        hex.show_move(false);
+        hex.ShowMove(false);
       }
       foreach (Hex hex in shoort) {
-        hex.show_short(false);
+        hex.ShowShort(false);
       }
       if (show_move) {
         board.PossibleMoves(unit, board.GetTile(p0), move);
         board.ShortestPath(unit, board.GetTile(p0), board.GetTile(p1), shoort);
         foreach (Hex hex in move) {
-          hex.show_move(true);
+          hex.ShowMove(true);
         }
         foreach (Hex hex in shoort) {
-          hex.show_short(true);
+          hex.ShowShort(true);
         }
       }
       foreach (Hex hex in influence) {
-        hex.show_influence(false);
+        hex.ShowInfluence(false);
       }
       if (show_influence) {
         board.RangeOfInfluence(unit, board.GetTile(p0), 0, influence);
         foreach (Hex hex in influence) {
-          hex.show_influence(true);
+          hex.ShowInfluence(true);
         }
       }
     }
