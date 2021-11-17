@@ -20,16 +20,16 @@ namespace MonoHexGrid
         /// <summary>
         /// movement cost from a Tile to another adjacent Tile
         /// </summary>
-        /// <param name="src"></param>
-        /// <param name="dst"></param>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
         /// <param name="orientation"></param>
-        public abstract int MoveCost(Tile src, Tile dst, int orientation);
+        public abstract int MoveCost(Tile source, Tile destination, int orientation);
 
         /// <summary>
         /// are you allowed to move into that Tile as only move even if you don't have enough movement points
         /// </summary>
-        /// <param name="dst"></param>
-        public abstract bool AtLeastOneTile(Tile dst);
+        /// <param name="destination"></param>
+        public abstract bool AtLeastOneTile(Tile destination);
 
         /// <summary>
         /// the maximum range of fire with a given category of weapon
@@ -44,10 +44,10 @@ namespace MonoHexGrid
         /// </summary>
         /// <param name="category"></param>
         /// <param name="distance"></param>
-        /// <param name="src"></param>
-        /// <param name="src_o"></param>
-        /// <param name="dst"></param>
-        /// <param name="dst_o"></param>
-        public abstract int VolumeOfFire(int category, int distance, Tile src, int src_o, Tile dst, int dst_o);
+        /// <param name="source"></param>
+        /// <param name="sourceOrientation"></param>
+        /// <param name="destination"></param>
+        /// <param name="destinationOrientation"></param>
+        public abstract int VolumeOfFire(int category, int distance, Tile source, int sourceOrientation, Tile destination, int destinationOrientation);
     }
 }

@@ -12,6 +12,9 @@ namespace Demo
         [Signal]
         public delegate void HexTouched(Vector2 position, Vector2 hex, int key);
 
+        public Vector2 TextureSize => Texture.GetSize();
+        public Vector2 Center => Centered ? new Vector2(0, 0) : Texture.GetSize() / 2;
+
         private const string _mapHorizontal = "res://demo/assets/map-h.png";
         private const string _mapVertical = "res://demo/assets/map-v.png";
         private const string _hexBlocked = "res://demo/assets/block.png";
@@ -137,22 +140,6 @@ namespace Demo
                 _hexRotation = 0;
                 _board = new HexBoard(10, 7, 100, v0, true, GetTile);
             }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public Vector2 TextureSize()
-        {
-            return Texture.GetSize();
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public Vector2 Center()
-        {
-            return Centered ? new Vector2(0, 0) : Texture.GetSize() / 2;
         }
 
         /// <summary>

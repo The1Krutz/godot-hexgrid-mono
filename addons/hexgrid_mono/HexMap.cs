@@ -31,7 +31,9 @@ namespace MonoHexGrid
     /// </summary>
     public class HexBoard : Node
     {
-        public bool HasVerticalEdge;
+        public int Size => ((int)_columnRow.y / 2 * _tl) + ((int)_columnRow.y % 2 * (int)_columnRow.x);
+
+        public bool HasVerticalEdge { get; set; }
 
         private const int _DegreeAdj = 2;
 
@@ -103,14 +105,6 @@ namespace MonoHexGrid
                 _angles[(int)Orientation.N] = 270;
                 _angles[(int)Orientation.NE] = 330;
             }
-        }
-
-        /// <summary>
-        /// the number of Tile
-        /// </summary>
-        public int Size()
-        {
-            return ((int)_columnRow.y / 2 * _tl) + ((int)_columnRow.y % 2 * (int)_columnRow.x);
         }
 
         /// <summary>
@@ -277,29 +271,6 @@ namespace MonoHexGrid
         {
             tiles.Clear();
             tiles.AddRange(BuildAdjacents(tile.Coordinates));
-        }
-
-        /// <summary>
-        /// build the 6 adjacent Tiles of a Tile given by it's col;row coordinates
-        /// </summary>
-        /// <param name="coordinates">Grid coordinates for the hex</param>
-        private List<Tile> BuildAdjacents(Vector2 coordinates)
-        {
-            _adjacents.Clear();
-            coordinates.x++;
-            _adjacents.Add(GetTile(coordinates));
-            coordinates.y++;
-            _adjacents.Add(GetTile(coordinates));
-            coordinates.x--;
-            _adjacents.Add(GetTile(coordinates));
-            coordinates.x--;
-            coordinates.y--;
-            _adjacents.Add(GetTile(coordinates));
-            coordinates.y--;
-            _adjacents.Add(GetTile(coordinates));
-            coordinates.x++;
-            _adjacents.Add(GetTile(coordinates));
-            return _adjacents;
         }
 
         /// <summary>
@@ -478,7 +449,7 @@ namespace MonoHexGrid
             // check for diagonals
             if (dx == 0 || dx == dy3)
             {
-                return DiagonalLoS(p0, p1, dx == 0, q13, tiles);
+                return DiagonalLineOfSight(p0, p1, dx == 0, q13, tiles);
             }
             // angle is less than 45°
             bool flat = dx > dy3;
@@ -546,205 +517,9 @@ namespace MonoHexGrid
                 }
                 tiles.Add(t);
                 t.IsBlocked = los_blocked;
-                los_blocked = los_blocked || t.BlockLos(from, to, d, Distance(p0, q));
+                los_blocked = los_blocked || t.IsLosBlocked(from, to, d, Distance(p0, q));
             }
             return ret;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="p0"></param>
-        /// <param name="p1"></param>
-        /// <param name="flat"></param>
-        /// <param name="q13"></param>
-        /// <param name="tiles"></param>
-        private Vector2 DiagonalLoS(Vector2 p0, Vector2 p1, bool flat, bool q13, List<Tile> tiles)
-        {
-            int dy = (p1.y > p0.y) ? 1 : -1;
-            int dx = (p1.x > p0.x) ? 1 : -1;
-            int x = (int)p0.x;
-            int y = (int)p0.y;
-            Tile from = GetTile(p0);
-            Tile to = GetTile(p1);
-            float d = Distance(p0, p1);
-            tiles.Add(from);
-            from.IsBlocked = false;
-            Vector2 ret = new Vector2(-1, -1);
-            int blocked = 0;
-            bool contact = false;
-            bool los_blocked = false;
-            while ((x != p1.x) || (y != p1.y))
-            {
-                int idx = 4;
-                if (flat)
-                {
-                    y += dy; // up left
-                }
-                else
-                {
-                    x += dx; // right
-                }
-                Vector2 q = new Vector2(x, y);
-                Tile t = GetTile(q);
-                if (t.IsOnMap)
-                {
-                    tiles.Add(t);
-                    t.IsBlocked = los_blocked;
-                    if (t.BlockLos(from, to, d, Distance(p0, q)))
-                    {
-                        blocked |= 0x01;
-                    }
-                }
-                else
-                {
-                    blocked |= 0x01;
-                    idx = 3;
-                }
-
-                if (flat)
-                {
-                    x += dx; // up right
-                }
-                else
-                {
-                    y += dy;  // up right
-                    if (!q13) { x -= dx; }
-                }
-                q = new Vector2(x, y);
-                t = GetTile(q);
-                if (t.IsOnMap)
-                {
-                    tiles.Add(t);
-                    t.IsBlocked = los_blocked;
-                    if (t.BlockLos(from, to, d, Distance(p0, q))) { blocked |= 0x02; }
-                }
-                else
-                {
-                    blocked |= 0x02;
-                    idx = 3;
-                }
-
-                if (flat)
-                {
-                    y += dy;  // up 
-                }
-                else
-                {
-                    x += dx;  // diagonal
-                }
-                q = new Vector2(x, y);
-                t = GetTile(q);
-                tiles.Add(t);
-                t.IsBlocked = los_blocked || blocked == 0x03;
-                if (t.IsBlocked && !contact)
-                {
-                    int o = ComputeOrientation(dx, dy, flat);
-                    ret = !los_blocked && blocked == 0x03
-                        ? ComputeContact(from.Position, to.Position, t.Position, Opposite(o))
-                        : ComputeContact(from.Position, to.Position, tiles[^idx].Position, o);
-                    contact = true;
-                }
-                los_blocked = t.IsBlocked || t.BlockLos(from, to, d, Distance(p0, q));
-            }
-            return ret;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="dx"></param>
-        /// <param name="dy"></param>
-        /// <param name="flat"></param>
-        private int ComputeOrientation(int dx, int dy, bool flat)
-        {
-            if (flat)
-            {
-                if (HasVerticalEdge)
-                {
-                    return dy == 1 ? (int)Orientation.S : (int)Orientation.N;
-                }
-
-                return dx == 1 ? (int)Orientation.S : (int)Orientation.N;
-            }
-            if (dx == 1)
-            {
-                if (dy == 1)
-                {
-                    return (int)Orientation.E;
-                }
-
-                return HasVerticalEdge ? (int)Orientation.E : (int)Orientation.N;
-            }
-            if (dy == 1)
-            {
-                return HasVerticalEdge ? (int)Orientation.W : (int)Orientation.S;
-            }
-
-            return (int)Orientation.W;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="t"></param>
-        /// <param name="orientation"></param>
-        private Vector2 ComputeContact(Vector2 from, Vector2 to, Vector2 t, int orientation)
-        {
-            float dx = to.x - from.x;
-            float dy = to.y - from.y;
-            float n = (dx == 0) ? int.MaxValue : (dy / dx);
-            float c = from.y - (n * from.x);
-            if (HasVerticalEdge)
-            {
-                switch (orientation)
-                {
-                    case (int)Orientation.N:
-                        return new Vector2(t.x, t.y - _side);
-                    case (int)Orientation.S:
-                        return new Vector2(t.x, t.y + _side);
-                    case (int)Orientation.E:
-                        return new Vector2(t.x + _halfWidth, from.y + (n * (t.x + _halfWidth - from.x)));
-                    case (int)Orientation.W:
-                        return new Vector2(t.x - _halfWidth, from.y + (n * (t.x - _halfWidth - from.x)));
-                    default:
-                        float p = (orientation == (int)Orientation.SE || orientation == (int)Orientation.NW) ? -_m : _m;
-                        float k = t.y - (p * t.x);
-                        if (orientation == (int)Orientation.SE || orientation == (int)Orientation.SW)
-                        {
-                            k += _side;
-                        }
-                        else
-                        {
-                            k -= _side;
-                        }
-                        float x = (k - c) / (n - p);
-                        return new Vector2(x, (n * x) + c);
-                }
-            }
-            else
-            {
-                switch (orientation)
-                {
-                    case (int)Orientation.E:
-                        return new Vector2(t.x + _side, t.y);
-                    case (int)Orientation.W:
-                        return new Vector2(t.x - _side, t.y);
-                    case (int)Orientation.N:
-                        return new Vector2(from.x + ((t.y - _halfWidth - from.y) / n), t.y - _halfWidth);
-                    case (int)Orientation.S:
-                        return new Vector2(from.x + ((t.y + _halfWidth - from.y) / n), t.y + _halfWidth);
-                    default:
-                        float p = (orientation == (int)Orientation.SE || orientation == (int)Orientation.NW) ? -_im : +_im;
-                        float k = orientation == (int)Orientation.SW || orientation == (int)Orientation.NW
-                            ? t.y - (p * (t.x - _side))
-                            : t.y - (p * (t.x + _side));
-                        float x = (k - c) / (n - p);
-                        return new Vector2(x, (n * x) + c);
-                }
-            }
         }
 
         /// <summary>
@@ -872,7 +647,7 @@ namespace MonoHexGrid
                         dst.SearchCount = _searchCount;
                         add = true;
                     }
-                    else if (dst.f > total || (rm && !dst.HasRoadMarchBonus && Mathf.Abs(dst.f - total) < 0.001))
+                    else if (dst.F > total || (rm && !dst.HasRoadMarchBonus && Mathf.Abs(dst.F - total) < 0.001))
                     {
                         stack.Remove(dst);
                         add = true;
@@ -880,13 +655,13 @@ namespace MonoHexGrid
                     if (add)
                     {
                         dst.Acc = cost;
-                        dst.f = total;
+                        dst.F = total;
                         dst.HasRoadMarchBonus = rm;
                         dst.Parent = src;
                         int idx = int.MaxValue;
                         for (int k = 0; k < stack.Count; k++)
                         {
-                            if (stack[k].f <= dst.f)
+                            if (stack[k].F <= dst.F)
                             {
                                 idx = k;
                                 break;
@@ -962,12 +737,231 @@ namespace MonoHexGrid
                         continue;
                     }
                     int o = DistantOrientation(from, dst);
-                    dst.f = piece.VolumeOfFire(category, d, from, o, dst, DistantOpposite(o));
+                    dst.F = piece.VolumeOfFire(category, d, from, o, dst, DistantOpposite(o));
                     stack.Add(dst);
                     tiles.Add(dst);
                 }
             }
             return tiles.Count;
+        }
+
+        /// <summary>
+        /// build the 6 adjacent Tiles of a Tile given by it's col;row coordinates
+        /// </summary>
+        /// <param name="coordinates">Grid coordinates for the hex</param>
+        private List<Tile> BuildAdjacents(Vector2 coordinates)
+        {
+            _adjacents.Clear();
+            coordinates.x++;
+            _adjacents.Add(GetTile(coordinates));
+            coordinates.y++;
+            _adjacents.Add(GetTile(coordinates));
+            coordinates.x--;
+            _adjacents.Add(GetTile(coordinates));
+            coordinates.x--;
+            coordinates.y--;
+            _adjacents.Add(GetTile(coordinates));
+            coordinates.y--;
+            _adjacents.Add(GetTile(coordinates));
+            coordinates.x++;
+            _adjacents.Add(GetTile(coordinates));
+            return _adjacents;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="p0"></param>
+        /// <param name="p1"></param>
+        /// <param name="flat"></param>
+        /// <param name="q13"></param>
+        /// <param name="tiles"></param>
+        private Vector2 DiagonalLineOfSight(Vector2 p0, Vector2 p1, bool flat, bool q13, List<Tile> tiles)
+        {
+            int dy = (p1.y > p0.y) ? 1 : -1;
+            int dx = (p1.x > p0.x) ? 1 : -1;
+            int x = (int)p0.x;
+            int y = (int)p0.y;
+            Tile from = GetTile(p0);
+            Tile to = GetTile(p1);
+            float d = Distance(p0, p1);
+            tiles.Add(from);
+            from.IsBlocked = false;
+            Vector2 ret = new Vector2(-1, -1);
+            int blocked = 0;
+            bool contact = false;
+            bool los_blocked = false;
+            while ((x != p1.x) || (y != p1.y))
+            {
+                int idx = 4;
+                if (flat)
+                {
+                    y += dy; // up left
+                }
+                else
+                {
+                    x += dx; // right
+                }
+                Vector2 q = new Vector2(x, y);
+                Tile t = GetTile(q);
+                if (t.IsOnMap)
+                {
+                    tiles.Add(t);
+                    t.IsBlocked = los_blocked;
+                    if (t.IsLosBlocked(from, to, d, Distance(p0, q)))
+                    {
+                        blocked |= 0x01;
+                    }
+                }
+                else
+                {
+                    blocked |= 0x01;
+                    idx = 3;
+                }
+
+                if (flat)
+                {
+                    x += dx; // up right
+                }
+                else
+                {
+                    y += dy;  // up right
+                    if (!q13) { x -= dx; }
+                }
+                q = new Vector2(x, y);
+                t = GetTile(q);
+                if (t.IsOnMap)
+                {
+                    tiles.Add(t);
+                    t.IsBlocked = los_blocked;
+                    if (t.IsLosBlocked(from, to, d, Distance(p0, q))) { blocked |= 0x02; }
+                }
+                else
+                {
+                    blocked |= 0x02;
+                    idx = 3;
+                }
+
+                if (flat)
+                {
+                    y += dy;  // up 
+                }
+                else
+                {
+                    x += dx;  // diagonal
+                }
+                q = new Vector2(x, y);
+                t = GetTile(q);
+                tiles.Add(t);
+                t.IsBlocked = los_blocked || blocked == 0x03;
+                if (t.IsBlocked && !contact)
+                {
+                    int o = ComputeOrientation(dx, dy, flat);
+                    ret = !los_blocked && blocked == 0x03
+                        ? ComputeContact(from.Position, to.Position, t.Position, Opposite(o))
+                        : ComputeContact(from.Position, to.Position, tiles[^idx].Position, o);
+                    contact = true;
+                }
+                los_blocked = t.IsBlocked || t.IsLosBlocked(from, to, d, Distance(p0, q));
+            }
+            return ret;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="dx"></param>
+        /// <param name="dy"></param>
+        /// <param name="flat"></param>
+        private int ComputeOrientation(int dx, int dy, bool flat)
+        {
+            if (flat)
+            {
+                if (HasVerticalEdge)
+                {
+                    return dy == 1 ? (int)Orientation.S : (int)Orientation.N;
+                }
+
+                return dx == 1 ? (int)Orientation.S : (int)Orientation.N;
+            }
+            if (dx == 1)
+            {
+                if (dy == 1)
+                {
+                    return (int)Orientation.E;
+                }
+
+                return HasVerticalEdge ? (int)Orientation.E : (int)Orientation.N;
+            }
+            if (dy == 1)
+            {
+                return HasVerticalEdge ? (int)Orientation.W : (int)Orientation.S;
+            }
+
+            return (int)Orientation.W;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="t"></param>
+        /// <param name="orientation"></param>
+        private Vector2 ComputeContact(Vector2 from, Vector2 to, Vector2 t, int orientation)
+        {
+            float dx = to.x - from.x;
+            float dy = to.y - from.y;
+            float n = (dx == 0) ? int.MaxValue : (dy / dx);
+            float c = from.y - (n * from.x);
+            if (HasVerticalEdge)
+            {
+                switch (orientation)
+                {
+                    case (int)Orientation.N:
+                        return new Vector2(t.x, t.y - _side);
+                    case (int)Orientation.S:
+                        return new Vector2(t.x, t.y + _side);
+                    case (int)Orientation.E:
+                        return new Vector2(t.x + _halfWidth, from.y + (n * (t.x + _halfWidth - from.x)));
+                    case (int)Orientation.W:
+                        return new Vector2(t.x - _halfWidth, from.y + (n * (t.x - _halfWidth - from.x)));
+                    default:
+                        float p = (orientation == (int)Orientation.SE || orientation == (int)Orientation.NW) ? -_m : _m;
+                        float k = t.y - (p * t.x);
+                        if (orientation == (int)Orientation.SE || orientation == (int)Orientation.SW)
+                        {
+                            k += _side;
+                        }
+                        else
+                        {
+                            k -= _side;
+                        }
+                        float x = (k - c) / (n - p);
+                        return new Vector2(x, (n * x) + c);
+                }
+            }
+            else
+            {
+                switch (orientation)
+                {
+                    case (int)Orientation.E:
+                        return new Vector2(t.x + _side, t.y);
+                    case (int)Orientation.W:
+                        return new Vector2(t.x - _side, t.y);
+                    case (int)Orientation.N:
+                        return new Vector2(from.x + ((t.y - _halfWidth - from.y) / n), t.y - _halfWidth);
+                    case (int)Orientation.S:
+                        return new Vector2(from.x + ((t.y + _halfWidth - from.y) / n), t.y + _halfWidth);
+                    default:
+                        float p = (orientation == (int)Orientation.SE || orientation == (int)Orientation.NW) ? -_im : +_im;
+                        float k = orientation == (int)Orientation.SW || orientation == (int)Orientation.NW
+                            ? t.y - (p * (t.x - _side))
+                            : t.y - (p * (t.x + _side));
+                        float x = (k - c) / (n - p);
+                        return new Vector2(x, (n * x) + c);
+                }
+            }
         }
     }
 }

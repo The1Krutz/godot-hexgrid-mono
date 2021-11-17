@@ -8,15 +8,14 @@ namespace MonoHexGrid
     /// </summary>
     public abstract class Tile : Node2D
     {
-        public Vector2 Coordinates;
-        public bool IsBlocked;
-        public bool IsOnMap;
-
-        public int Acc; // TODO - figure out what this is and rename it
-        public float f; // TODO - figure out what this is and rename it
-        public Tile Parent;
-        public bool HasRoadMarchBonus;
-        public int SearchCount;
+        public Vector2 Coordinates { get; set; }
+        public Tile Parent { get; set; }
+        public bool IsBlocked { get; set; }
+        public bool IsOnMap { get; set; }
+        public bool HasRoadMarchBonus { get; set; }
+        public int SearchCount { get; set; }
+        public int Acc { get; set; } // TODO - figure out what this is and rename it
+        public float F { get; set; } // TODO - figure out what this is and rename it
 
         /// <summary>
         ///
@@ -41,21 +40,6 @@ namespace MonoHexGrid
             }
             Visible = false;
         }
-
-        /// <summary>
-        /// is there a road with given orientation that drives out of that Tile
-        /// </summary>
-        /// <param name="orientation"></param>
-        public abstract bool HasRoad(int orientation);
-
-        /// <summary>
-        /// is the line of sight blocked from a Tile to another
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="distance">Distance between from and to</param>
-        /// <param name="distanceThis">Distance between from and this Tile</param>
-        public abstract bool BlockLos(Tile from, Tile to, float distance, float distanceThis);
 
         /// <summary>
         ///
@@ -91,5 +75,20 @@ namespace MonoHexGrid
         {
             return GetChild<Node2D>(index).Visible;
         }
+
+        /// <summary>
+        /// is there a road with given orientation that drives out of that Tile
+        /// </summary>
+        /// <param name="orientation"></param>
+        public abstract bool HasRoad(int orientation);
+
+        /// <summary>
+        /// is the line of sight blocked from a Tile to another
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="distance">Distance between from and to</param>
+        /// <param name="distanceThis">Distance between from and this Tile</param>
+        public abstract bool IsLosBlocked(Tile from, Tile to, float distance, float distanceThis);
     }
 }

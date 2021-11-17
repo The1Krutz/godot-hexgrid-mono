@@ -45,7 +45,7 @@ namespace Demo
         /// </summary>
         public void OnViewportResized()
         {
-            _camera.Configure(_viewport.Size, _map.Center(), _map.TextureSize());
+            _camera.Configure(_viewport.Size, _map.Center, _map.TextureSize);
         }
 
         /// <summary>

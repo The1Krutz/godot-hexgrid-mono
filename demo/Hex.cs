@@ -21,8 +21,8 @@ namespace Demo
     /// </summary>
     public class Hex : Tile
     {
-        public HexType Type = HexType.Plain;
-        public int Roads;
+        public HexType Type { get; set; } = HexType.Plain;
+        public int Roads { get; set; }
 
         public override void _Ready()
         {
@@ -56,11 +56,11 @@ namespace Demo
         /// <param name="distance">Distance between from and to</param>
         /// <param name="distanceThis">Distance between from and this Tile</param>
         /// <exception cref="ArgumentException"><paramref name="from"/> is not <c>Hex</c>.</exception>
-        public override bool BlockLos(Tile from, Tile to, float distance, float distanceThis)
+        public override bool IsLosBlocked(Tile from, Tile to, float distance, float distanceThis)
         {
             if (from is Hex fromhex && to is Hex tohex)
             {
-                return BlockLos(fromhex, tohex, distance, distanceThis);
+                return IsLosBlocked(fromhex, tohex, distance, distanceThis);
             }
 
             throw new ArgumentException("Somehow ended up with the wrong type of Tiles!");
@@ -73,7 +73,7 @@ namespace Demo
         /// <param name="to"></param>
         /// <param name="distance">Distance between from and to</param>
         /// <param name="distanceThis">Distance between from and this Tile</param>
-        private bool BlockLos(Hex from, Hex to, float distance, float distanceThis)
+        private bool IsLosBlocked(Hex from, Hex to, float distance, float distanceThis)
         {
             int h = Height() + Elevation();
             if (h == 0)
@@ -213,7 +213,7 @@ namespace Demo
         public void ShowInfluence(bool b) // TODO - figure out what this is and rename it
         {
             Sprite s = GetChild<Sprite>(0);
-            s.Modulate = new Color(f / 10.0f, 0.0f, 0.0f);
+            s.Modulate = new Color(F / 10.0f, 0.0f, 0.0f);
             EnableOverlay(0, b);
         }
     }
