@@ -1,13 +1,23 @@
 {
   "FormattingOptions": {
-    "NewLinesForBracesInTypes": false,
-    "NewLinesForBracesInMethods": false,
-    "NewLinesForBracesInProperties": false,
-    "NewLinesForBracesInAccessors": false,
-    "NewLinesForBracesInAnonymousMethods": false,
-    "NewLinesForBracesInControlBlocks": false,
-    "NewLinesForBracesInAnonymousTypes": false,
-    "NewLinesForBracesInObjectCollectionArrayInitializers": false,
-    "NewLinesForBracesInLambdaExpressionBody": false
+    "NewLinesForBracesInTypes": true,
+    "NewLinesForBracesInMethods": true,
+    "NewLinesForBracesInProperties": true,
+    "NewLinesForBracesInAccessors": true,
+    "NewLinesForBracesInAnonymousMethods": true,
+    "NewLinesForBracesInControlBlocks": true,
+    "NewLinesForBracesInAnonymousTypes": true,
+    "NewLinesForBracesInObjectCollectionArrayInitializers": true,
+    "NewLinesForBracesInLambdaExpressionBody": true,
+    "UseTabs": false,
+    "TabSize": 4,
+    "IndentationSize": 4,
+    "NewLineForElse": true,
+    "NewLineForCatch": true,
+    "NewLineForFinally": true,
+    "NewLineForMembersInObjectInit": true,
+    "NewLineForMembersInAnonymousTypes": false,
+    "NewLineForClausesInQuery": true,
+    "OrganizeImports": true
   }
 }
