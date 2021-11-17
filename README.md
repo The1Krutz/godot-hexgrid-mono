@@ -1,6 +1,7 @@
-# godot-hexgrid
+# godot-hexgrid-mono
 
-is a [godot](https://godotengine.org/) based framework to build hex map boardgames.
+is a C# conversion of [godot-hexgrid](https://github.com/jeremyz/godot-hexgrid),
+which is a [godot](https://godotengine.org/) based framework to build hex map boardgames.
 
 code is based on [gdx-boardgame](https://github.com/jeremyz/gdx-boardgame),
 which is based on [rustanddust](https://github.com/jeremyz/rustanddust).
