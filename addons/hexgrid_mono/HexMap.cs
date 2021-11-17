@@ -756,7 +756,7 @@ namespace MonoHexGrid
             while (stack.Count > 0)
             {
                 Tile src = stack.Last();
-                stack.RemoveAt(stack.Count - 1); // note: I added this
+                stack.RemoveAt(stack.Count - 1);
                 if ((src.acc + (src.road_march ? road_march_bonus : 0)) <= 0)
                 {
                     continue;
@@ -819,7 +819,7 @@ namespace MonoHexGrid
             while (stack.Count > 0)
             {
                 Tile src = stack.Last();
-                stack.RemoveAt(stack.Count - 1); // note: I added this
+                stack.RemoveAt(stack.Count - 1);
                 if (src == to)
                 {
                     break;
@@ -910,7 +910,7 @@ namespace MonoHexGrid
             while (stack.Count > 0)
             {
                 Tile src = stack.Last();
-                stack.RemoveAt(stack.Count - 1); // note: I added this
+                stack.RemoveAt(stack.Count - 1);
                 BuildAdjacents(src.coords);
                 foreach (Tile dst in adjacents)
                 {
