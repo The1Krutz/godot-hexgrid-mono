@@ -49,7 +49,9 @@ namespace Demo
         /// <param name="orientation"></param>
         private int MoveCost(Hex src, Hex dst, int orientation)
         {
-            return (src.HasRoad(orientation) && dst.type != 3) ? 1 : dst.Cost();
+            return (src.HasRoad(orientation) && dst.type != HexType.Blocked)
+                ? 1
+                : dst.Cost();
         }
 
         /// <summary>

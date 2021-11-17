@@ -7,14 +7,26 @@ namespace Demo
     /// <summary>
     ///
     /// </summary>
+    public enum HexType
+    {
+        Plain = -1,
+        City = 0,
+        Wood = 1,
+        Mountain = 2,
+        Blocked = 3
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
     public class Hex : Tile
     {
-        public int type = -1;
+        public HexType type = HexType.Plain;
         public int roads;
 
         public override void _Ready()
         {
-            type = -1;
+            type = HexType.Plain;
         }
 
         /// <summary>
@@ -22,23 +34,7 @@ namespace Demo
         /// </summary>
         public string Inspect()
         {
-            string s = "plain";
-            if (type == 0)
-            {
-                s = "city";
-            }
-            else if (type == 1)
-            {
-                s = "wood";
-            }
-            else if (type == 2)
-            {
-                s = "mountain";
-            }
-            else if (type == 3)
-            {
-                s = "blocked";
-            }
+            string s = Enum.GetName(typeof(HexType), type);
             return $"[{coords.x:F0};{coords.y:F0}]\n -> ({Position.x:F0};{Position.y:F0})\n -> {s}\ne:{Elevation()} h:{Height()} c:{Cost()} r:{roads}";
         }
 
@@ -98,10 +94,10 @@ namespace Demo
         /// </summary>
         public void Change()
         {
-            type = ((type + 2) % 5) - 1;
+            type = (HexType)((((int)type + 2) % 5) - 1);
             for (int i = 0; i < 4; i++)
             {
-                EnableOverlay(i + 3, i == type);
+                EnableOverlay(i + 3, i == (int)type);
             }
         }
 
@@ -110,15 +106,12 @@ namespace Demo
         /// </summary>
         public int Cost()
         {
-            if (type == -1)
+            return type switch
             {
-                return 1;
-            }
-            else if (type == 3)
-            {
-                return -1;
-            }
-            return type + 1;
+                HexType.Plain => 1,
+                HexType.Blocked => -1,
+                _ => (int)type + 1,
+            };
         }
 
         /// <summary>
@@ -126,19 +119,13 @@ namespace Demo
         /// </summary>
         public int Height()
         {
-            if (type == 0)
+            return type switch
             {
-                return 2;
-            }
-            else if (type == 1)
-            {
-                return 1;
-            }
-            else if (type == 2)
-            {
-                return 0;
-            }
-            return 0;
+                HexType.City => 2,
+                HexType.Wood => 1,
+                HexType.Mountain => 0,
+                _ => 0,
+            };
         }
 
         /// <summary>
@@ -146,7 +133,7 @@ namespace Demo
         /// </summary>
         public int Elevation()
         {
-            return type == 2 ? 3 : 0;
+            return type == HexType.Mountain ? 3 : 0;
         }
 
         /// <summary>
@@ -155,7 +142,7 @@ namespace Demo
         /// <param name="category"></param>
         public int RangeModifier(int category)
         {
-            return type == 2 ? 1 : 0;
+            return type == HexType.Mountain ? 1 : 0;
         }
 
         /// <summary>
@@ -165,7 +152,7 @@ namespace Demo
         /// <param name="orientation"></param>
         public int AttackModifier(int category, int orientation)
         {
-            return type == 1 ? 2 : 0;
+            return type == HexType.Wood ? 2 : 0;
         }
 
         /// <summary>
@@ -175,19 +162,13 @@ namespace Demo
         /// <param name="orientation"></param>
         public int DefenseValue(int category, int orientation)
         {
-            if (type == 0)
+            return type switch
             {
-                return 2;
-            }
-            else if (type == 1)
-            {
-                return 1;
-            }
-            else if (type == 2)
-            {
-                return 1;
-            }
-            return 0;
+                HexType.City => 2,
+                HexType.Wood => 1,
+                HexType.Mountain => 1,
+                _ => 0,
+            };
         }
 
         /// <summary>

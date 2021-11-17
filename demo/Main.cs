@@ -102,22 +102,21 @@ namespace Demo
             }
             else if (@event is InputEventMouseButton _mbe)
             {
-                if (_mbe.ButtonIndex == 1)
+                switch (_mbe.ButtonIndex)
                 {
-                    drag_map = moved < 5 && _map.OnClick(_mbe.Pressed);
-                    moved = 0;
-                }
-                else if (_mbe.ButtonIndex == 3)
-                {
-                    drag_map = _mbe.Pressed;
-                }
-                else if (_mbe.ButtonIndex == 4)
-                {
-                    OnZoom(true);
-                }
-                else if (_mbe.ButtonIndex == 5)
-                {
-                    OnZoom(false);
+                    case 1:
+                        drag_map = moved < 5 && _map.OnClick(_mbe.Pressed);
+                        moved = 0;
+                        break;
+                    case 3:
+                        drag_map = _mbe.Pressed;
+                        break;
+                    case 4:
+                        OnZoom(true);
+                        break;
+                    case 5:
+                        OnZoom(false);
+                        break;
                 }
             }
             else if (@event is InputEventKey _ke)

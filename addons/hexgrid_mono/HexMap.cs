@@ -9,7 +9,14 @@ namespace MonoHexGrid
     /// </summary>
     public enum Orientation
     {
-        E = 1, NE = 2, N = 4, NW = 8, W = 16, SW = 32, S = 64, SE = 128
+        E = 1,
+        NE = 2,
+        N = 4,
+        NW = 8,
+        W = 16,
+        SW = 32,
+        S = 64,
+        SE = 128
     }
 
     /// <summary>
@@ -239,7 +246,10 @@ namespace MonoHexGrid
         /// <param name="coords"></param>
         public int Key(Vector2 coords)
         {
-            if (!IsOnMap(coords)) { return -1; }
+            if (!IsOnMap(coords))
+            {
+                return -1;
+            }
             return v
                 ? Key((int)coords.x, (int)coords.y)
                 : Key((int)coords.y, (int)coords.x);
@@ -269,10 +279,7 @@ namespace MonoHexGrid
         public void AdjacentsOf(Tile tile, List<Tile> tiles)
         {
             tiles.Clear();
-            foreach (Tile t in BuildAdjacents(tile.coords))
-            {
-                tiles.Add(t);
-            }
+            tiles.AddRange(BuildAdjacents(tile.coords));
         }
 
         /// <summary>
@@ -417,6 +424,7 @@ namespace MonoHexGrid
                 float fdy = dy * 0.86602f;
                 return Mathf.Sqrt((fdx * fdx) + (fdy * fdy));
             }
+
             dx = Mathf.Abs(dx);
             dy = Mathf.Abs(dy);
             float dz = Mathf.Abs(p1.x - p0.x - p1.y + p0.y);
@@ -695,66 +703,51 @@ namespace MonoHexGrid
             float c = from.y - (n * from.x);
             if (v)
             {
-                if (o == (int)Orientation.N)
+                switch (o)
                 {
-                    return new Vector2(t.x, t.y - s);
+                    case (int)Orientation.N:
+                        return new Vector2(t.x, t.y - s);
+                    case (int)Orientation.S:
+                        return new Vector2(t.x, t.y + s);
+                    case (int)Orientation.E:
+                        return new Vector2(t.x + dw, from.y + (n * (t.x + dw - from.x)));
+                    case (int)Orientation.W:
+                        return new Vector2(t.x - dw, from.y + (n * (t.x - dw - from.x)));
+                    default:
+                        float p = (o == (int)Orientation.SE || o == (int)Orientation.NW) ? -m : m;
+                        float k = t.y - (p * t.x);
+                        if (o == (int)Orientation.SE || o == (int)Orientation.SW)
+                        {
+                            k += s;
+                        }
+                        else
+                        {
+                            k -= s;
+                        }
+                        float x = (k - c) / (n - p);
+                        return new Vector2(x, (n * x) + c);
                 }
-                else if (o == (int)Orientation.S)
-                {
-                    return new Vector2(t.x, t.y + s);
-                }
-                else if (o == (int)Orientation.E)
-                {
-                    float x = t.x + dw;
-                    return new Vector2(x, from.y + (n * (x - from.x)));
-                }
-                else if (o == (int)Orientation.W)
-                {
-                    float x = t.x - dw;
-                    return new Vector2(x, from.y + (n * (x - from.x)));
-                }
-                else
-                {
-                    float p = (o == (int)Orientation.SE || o == (int)Orientation.NW) ? -m : m;
-                    float k = t.y - (p * t.x);
-                    if (o == (int)Orientation.SE || o == (int)Orientation.SW)
-                    {
-                        k += s;
-                    }
-                    else
-                    {
-                        k -= s;
-                    }
-                    float x = (k - c) / (n - p);
-                    return new Vector2(x, (n * x) + c);
-                }
-            }
-            else if (o == (int)Orientation.E)
-            {
-                return new Vector2(t.x + s, t.y);
-            }
-            else if (o == (int)Orientation.W)
-            {
-                return new Vector2(t.x - s, t.y);
-            }
-            else if (o == (int)Orientation.N)
-            {
-                float y = t.y - dw;
-                return new Vector2(from.x + ((y - from.y) / n), y);
-            }
-            else if (o == (int)Orientation.S)
-            {
-                float y = t.y + dw;
-                return new Vector2(from.x + ((y - from.y) / n), y);
             }
             else
             {
-                float p = (o == (int)Orientation.SE || o == (int)Orientation.NW) ? -im : +im;
-                float k = o == (int)Orientation.SW || o == (int)Orientation.NW
-                    ? t.y - (p * (t.x - s))
-                    : t.y - (p * (t.x + s));
-                float x = (k - c) / (n - p);
-                return new Vector2(x, (n * x) + c);
+                switch (o)
+                {
+                    case (int)Orientation.E:
+                        return new Vector2(t.x + s, t.y);
+                    case (int)Orientation.W:
+                        return new Vector2(t.x - s, t.y);
+                    case (int)Orientation.N:
+                        return new Vector2(from.x + ((t.y - dw - from.y) / n), t.y - dw);
+                    case (int)Orientation.S:
+                        return new Vector2(from.x + ((t.y + dw - from.y) / n), t.y + dw);
+                    default:
+                        float p = (o == (int)Orientation.SE || o == (int)Orientation.NW) ? -im : +im;
+                        float k = o == (int)Orientation.SW || o == (int)Orientation.NW
+                            ? t.y - (p * (t.x - s))
+                            : t.y - (p * (t.x + s));
+                        float x = (k - c) / (n - p);
+                        return new Vector2(x, (n * x) + c);
+                }
             }
         }
 
