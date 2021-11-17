@@ -1,0 +1,3 @@
+[submodule "godot-hexgrid"]
+	path = godot-hexgrid
+	url = git@github.com:jeremyz/godot-hexgrid.git

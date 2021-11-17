@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Piece.png-5155cac4a0bf7c2a889be85d756a935e.stex"
+path="res://.import/HexMap.png-bfa7bb63de707f7ded376aa8701180d0.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/hexgrid/Piece.png"
-dest_files=[ "res://.import/Piece.png-5155cac4a0bf7c2a889be85d756a935e.stex" ]
+source_file="res://addons/hexgrid_mono/HexMap.png"
+dest_files=[ "res://.import/HexMap.png-bfa7bb63de707f7ded376aa8701180d0.stex" ]
 
 [params]
 

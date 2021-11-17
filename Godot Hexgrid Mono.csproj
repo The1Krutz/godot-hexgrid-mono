@@ -1,0 +1,9 @@
+<Project Sdk="Godot.NET.Sdk/3.3.0">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>GodotHexgridMono</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup>
+  <CodeAnalysisRuleSet>./roslynator.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+</Project>

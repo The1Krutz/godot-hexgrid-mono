@@ -16,3 +16,7 @@ export_presets.cfg
 data_*/
 mono_crash.*.json
 
+# Test-related ignores
+Test/Metadata
+Test/Results
+Test/results.xml
