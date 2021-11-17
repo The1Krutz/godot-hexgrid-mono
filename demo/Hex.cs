@@ -35,7 +35,8 @@ namespace Demo
         public override string ToString()
         {
             string s = Enum.GetName(typeof(HexType), Type);
-            return $"[{Coordinates.x:F0};{Coordinates.y:F0}]\n -> ({Position.x:F0};{Position.y:F0})\n -> {s}\ne:{Elevation()} h:{Height()} c:{Cost()} r:{Roads}";
+            return $"[{Coordinates.x:F0};{Coordinates.y:F0}]\n -> ({Position.x:F0};{Position.y:F0})"
+                + $"\n -> {s}\ne:{Elevation()} h:{Height()} c:{Cost()} r:{Roads}";
         }
 
         /// <summary>

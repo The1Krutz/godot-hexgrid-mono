@@ -91,7 +91,9 @@ namespace Demo
         /// </summary>
         public void RotateMap()
         {
-            Texture = GD.Load<Texture>(IsInstanceValid(_board) && _board.HasVerticalEdge ? _mapHorizontal : _mapVertical);
+            Texture = GD.Load<Texture>(IsInstanceValid(_board) && _board.HasVerticalEdge
+                ? _mapHorizontal
+                : _mapVertical);
             Configure();
             Reset();
         }
@@ -236,7 +238,21 @@ namespace Demo
                 Roads = GetRoad(key),
                 RotationDegrees = _hexRotation
             };
-            hex.Configure(_board.CenterOf(coordinates), coordinates, new List<string>() { _hexRed, _hexGreen, _hexBlack, _hexCity, _hexTree, _hexMountain, _hexBlocked, _hexMove, _hexMovePath });
+            hex.Configure(
+                _board.CenterOf(coordinates),
+                coordinates,
+                new List<string>()
+                {
+                    _hexRed,
+                    _hexGreen,
+                    _hexBlack,
+                    _hexCity,
+                    _hexTree,
+                    _hexMountain,
+                    _hexBlocked,
+                    _hexMove,
+                    _hexMovePath
+                });
             _mapHexes[key] = hex;
             _hexes.AddChild(hex);
             return hex;
@@ -281,7 +297,11 @@ namespace Demo
         /// <param name="coords"></param>
         public void Notify(Vector2 pos, Vector2 coords)
         {
-            EmitSignal(nameof(HexTouched), pos, _board.GetTile(coords), _board.IsOnMap(coords) ? _board.Key(coords) : -1);
+            EmitSignal(
+                nameof(HexTouched),
+                pos,
+                _board.GetTile(coords),
+                _board.IsOnMap(coords) ? _board.Key(coords) : -1);
         }
 
         /// <summary>

@@ -71,7 +71,10 @@ namespace Demo
         /// </summary>
         public void OnToggle()
         {
-            _map.SetMode(_ui.GetNode<CheckBox>("LOS").Pressed, _ui.GetNode<CheckBox>("Move").Pressed, _ui.GetNode<CheckBox>("Influence").Pressed);
+            _map.SetMode(
+                _ui.GetNode<CheckBox>("LOS").Pressed,
+                _ui.GetNode<CheckBox>("Move").Pressed,
+                _ui.GetNode<CheckBox>("Influence").Pressed);
         }
 
         /// <summary>

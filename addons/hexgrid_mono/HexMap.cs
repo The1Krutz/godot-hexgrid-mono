@@ -62,7 +62,13 @@ namespace MonoHexGrid
         /// <param name="v0"></param>
         /// <param name="hasVerticalEdge"></param>
         /// <param name="tileFactory"></param>
-        public HexBoard(int cols, int rows, float side, Vector2 v0, bool hasVerticalEdge, GetTile tileFactory)
+        public HexBoard(
+            int cols,
+            int rows,
+            float side,
+            Vector2 v0,
+            bool hasVerticalEdge,
+            GetTile tileFactory)
         {
             _tileFactory = tileFactory;
             HasVerticalEdge = hasVerticalEdge;
@@ -305,8 +311,12 @@ namespace MonoHexGrid
         public Vector2 CenterOf(Vector2 coordinates)
         {
             return HasVerticalEdge
-                ? new Vector2(_bottomCorner.x + _halfWidth + (coordinates.x * _width) - (coordinates.y * _halfWidth), _bottomCorner.y + _halfHeight + (coordinates.y * _height))
-                : new Vector2(_bottomCorner.y + _halfHeight + (coordinates.x * _height), _bottomCorner.x + _halfWidth + (coordinates.y * _width) - (coordinates.x * _halfWidth));
+                ? new Vector2(
+                    _bottomCorner.x + _halfWidth + (coordinates.x * _width) - (coordinates.y * _halfWidth),
+                    _bottomCorner.y + _halfHeight + (coordinates.y * _height))
+                : new Vector2(
+                    _bottomCorner.y + _halfHeight + (coordinates.x * _height),
+                    _bottomCorner.x + _halfWidth + (coordinates.y * _width) - (coordinates.x * _halfWidth));
         }
 
         /// <summary>
@@ -580,7 +590,9 @@ namespace MonoHexGrid
                         stack.Add(dst);
                         tiles.Add(dst);
                     }
-                    else if (r > dst.Acc || (rm && (r + road_march_bonus > dst.Acc + (dst.HasRoadMarchBonus ? road_march_bonus : 0))))
+                    else if (r > dst.Acc || (rm && (r + road_march_bonus > dst.Acc + (dst.HasRoadMarchBonus
+                        ? road_march_bonus
+                        : 0))))
                     {
                         dst.Acc = r;
                         dst.Parent = src;

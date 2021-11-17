@@ -48,6 +48,12 @@ namespace MonoHexGrid
         /// <param name="sourceOrientation"></param>
         /// <param name="destination"></param>
         /// <param name="destinationOrientation"></param>
-        public abstract int VolumeOfFire(int category, int distance, Tile source, int sourceOrientation, Tile destination, int destinationOrientation);
+        public abstract int VolumeOfFire(
+            int category,
+            int distance,
+            Tile source,
+            int sourceOrientation,
+            Tile destination,
+            int destinationOrientation);
     }
 }

@@ -100,11 +100,23 @@ namespace Demo
         /// <param name="destination"></param>
         /// <param name="destinationOrientation"></param>
         /// <exception cref="ArgumentException"></exception>
-        public override int VolumeOfFire(int category, int distance, Tile source, int sourceOrientation, Tile destination, int destinationOrientation)
+        public override int VolumeOfFire(
+            int category,
+            int distance,
+            Tile source,
+            int sourceOrientation,
+            Tile destination,
+            int destinationOrientation)
         {
             if (source is Hex srchex && destination is Hex dsthex)
             {
-                return VolumeOfFire(category, distance, srchex, sourceOrientation, dsthex, destinationOrientation);
+                return VolumeOfFire(
+                    category,
+                    distance,
+                    srchex,
+                    sourceOrientation,
+                    dsthex,
+                    destinationOrientation);
             }
 
             throw new ArgumentException("Somehow ended up with the wrong type of Tiles!");
@@ -119,7 +131,13 @@ namespace Demo
         /// <param name="sourceOrientation"></param>
         /// <param name="destination"></param>
         /// <param name="destinationOrientation"></param>
-        private int VolumeOfFire(int category, int distance, Hex source, int sourceOrientation, Hex destination, int destinationOrientation)
+        private int VolumeOfFire(
+            int category,
+            int distance,
+            Hex source,
+            int sourceOrientation,
+            Hex destination,
+            int destinationOrientation)
         {
             int fp = 10;
             if (distance > 6)
