@@ -101,10 +101,10 @@ namespace Demo {
       }
       if (v) {
         hex_rotation = 30;
-        board = new HexBoard(10, 4, 100, v0, false, GD.FuncRef(this, nameof(get_tile)));
+        board = new HexBoard(10, 4, 100, v0, false, get_tile);
       } else {
         hex_rotation = 0;
-        board = new HexBoard(10, 7, 100, v0, true, GD.FuncRef(this, nameof(get_tile)));
+        board = new HexBoard(10, 7, 100, v0, true, get_tile);
       }
     }
 

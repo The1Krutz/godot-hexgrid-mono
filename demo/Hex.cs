@@ -55,8 +55,9 @@ namespace Demo {
 
     public void change() {
       type = ((type + 2) % 5) - 1;
-      for (int i = 0; i < 4; i++) // i in range(4), double check that gives the same range as this
-      { enable_overlay(i + 3, i == type); }
+      for (int i = 0; i < 4; i++) {
+        enable_overlay(i + 3, i == type);
+      }
     }
 
     public int cost() {

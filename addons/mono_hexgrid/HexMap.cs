@@ -6,6 +6,7 @@ namespace MonoHexGrid {
   public enum Orientation {
     E = 1, NE = 2, N = 4, NW = 8, W = 16, SW = 32, S = 64, SE = 128
   }
+  public delegate Tile GetTile(Vector2 coords, int k);
 
   public class HexBoard : Node {
     public const int IMAX = int.MaxValue;
@@ -25,13 +26,13 @@ namespace MonoHexGrid {
     public float im; // dw / dh
     public int tl; // num of hexes in 2 consecutives rows
 
-    public FuncRef tile_factory_fct;
+    public GetTile tile_factory_fct;
     public Dictionary<int, int> angles = new Dictionary<int, int>();
     public List<Tile> adjacents = new List<Tile>();
     public int search_count;
     public List<Tile> stack = new List<Tile>();
 
-    public HexBoard(int cols, int rows, float side, Vector2 v0, bool vertical, FuncRef fct) {
+    public HexBoard(int cols, int rows, float side, Vector2 v0, bool vertical, GetTile fct) {
       tile_factory_fct = fct;
       v = vertical;
       s = side;
@@ -79,7 +80,7 @@ namespace MonoHexGrid {
     /// fetch a Tile given it's col;row coordinates
     /// </summary>
     public Tile get_tile(Vector2 coords) {
-      return (Tile)tile_factory_fct.CallFunc(coords, key(coords));
+      return tile_factory_fct(coords, key(coords));
     }
 
     /// <summary>
