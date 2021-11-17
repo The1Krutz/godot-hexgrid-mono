@@ -510,7 +510,7 @@ namespace MonoHexGrid
                 Tile t = GetTile(q);
                 if (los_blocked && !contact)
                 {
-                    Tile prev = tiles[^1];
+                    Tile prev = tiles[tiles.Count - 1];
                     int o = ToOrientation(Angle(prev, t));
                     ret = ComputeContact(from.Position, to.Position, prev.Position, o);
                     contact = true;
@@ -859,7 +859,7 @@ namespace MonoHexGrid
                     int o = ComputeOrientation(dx, dy, flat);
                     ret = !los_blocked && blocked == 0x03
                         ? ComputeContact(from.Position, to.Position, t.Position, Opposite(o))
-                        : ComputeContact(from.Position, to.Position, tiles[^idx].Position, o);
+                        : ComputeContact(from.Position, to.Position, tiles[tiles.Count - idx].Position, o);
                     contact = true;
                 }
                 los_blocked = t.IsBlocked || t.IsLosBlocked(from, to, d, Distance(p0, q));

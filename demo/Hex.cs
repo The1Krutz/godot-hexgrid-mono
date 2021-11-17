@@ -106,12 +106,15 @@ namespace Demo
         /// </summary>
         public int Cost()
         {
-            return Type switch
+            switch (Type)
             {
-                HexType.Plain => 1,
-                HexType.Blocked => -1,
-                _ => (int)Type + 1,
-            };
+                case HexType.Plain:
+                    return 1;
+                case HexType.Blocked:
+                    return -1;
+                default:
+                    return (int)Type + 1;
+            }
         }
 
         /// <summary>
@@ -119,13 +122,16 @@ namespace Demo
         /// </summary>
         public int Height()
         {
-            return Type switch
+            switch (Type)
             {
-                HexType.City => 2,
-                HexType.Wood => 1,
-                HexType.Mountain => 0,
-                _ => 0,
-            };
+                case HexType.City:
+                    return 2;
+                case HexType.Wood:
+                    return 1;
+                case HexType.Mountain:
+                default:
+                    return 0;
+            }
         }
 
         /// <summary>
@@ -162,13 +168,16 @@ namespace Demo
         /// <param name="orientation"></param>
         public int DefenseValue(int category, int orientation)
         {
-            return Type switch
+            switch (Type)
             {
-                HexType.City => 2,
-                HexType.Wood => 1,
-                HexType.Mountain => 1,
-                _ => 0,
-            };
+                case HexType.City:
+                    return 2;
+                case HexType.Wood:
+                case HexType.Mountain:
+                    return 1;
+                default:
+                    return 0;
+            }
         }
 
         /// <summary>

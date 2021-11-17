@@ -4,6 +4,9 @@
     <RootNamespace>GodotHexgridMono</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
-  <CodeAnalysisRuleSet>./roslynator.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>./roslynator.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>7</LangVersion>
   </PropertyGroup>
 </Project>
