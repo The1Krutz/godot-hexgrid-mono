@@ -8,40 +8,6 @@
 
 config_version=4
 
-_global_script_classes=[ {
-"base": "Tile",
-"class": "Hex",
-"language": "GDScript",
-"path": "res://demo/Hex.gd"
-}, {
-"base": "Node",
-"class": "HexBoard",
-"language": "GDScript",
-"path": "res://addons/hexgrid/HexMap.gd"
-}, {
-"base": "Node2D",
-"class": "Piece",
-"language": "GDScript",
-"path": "res://addons/hexgrid/Piece.gd"
-}, {
-"base": "Node2D",
-"class": "Tile",
-"language": "GDScript",
-"path": "res://addons/hexgrid/Tile.gd"
-}, {
-"base": "Piece",
-"class": "Unit",
-"language": "GDScript",
-"path": "res://demo/Unit.gd"
-} ]
-_global_script_class_icons={
-"Hex": "res://addons/hexgrid/Tile.png",
-"HexBoard": "res://addons/hexgrid/HexMap.png",
-"Piece": "res://addons/hexgrid/Piece.png",
-"Tile": "res://addons/hexgrid/Tile.png",
-"Unit": "res://addons/hexgrid/Piece.png"
-}
-
 [application]
 
 config/name="Godot Hexgrid"
@@ -55,7 +21,7 @@ window/size/height=1080
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/gd2cs.py-9dbce4fd8e96dd55d183fc407b237dc108e0c7be/plugin.cfg" )
+enabled=PoolStringArray(  )
 
 [gd2cs]
 
