@@ -125,7 +125,7 @@ namespace Demo {
 
     public void show_influence(bool b) {
       Sprite s = GetChild<Sprite>(0);
-      s.Modulate = Color.Color8((byte)(f / 10.0), 0, 0);
+      s.Modulate = new Color(f / 10.0f, 0.0f, 0.0f);
       enable_overlay(0, b);
     }
   }
