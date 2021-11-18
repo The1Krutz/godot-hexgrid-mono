@@ -3,9 +3,6 @@ using MonoHexGrid;
 
 namespace Demo
 {
-    /// <summary>
-    ///
-    /// </summary>
     public class Unit : Piece
     {
         /// <summary>
@@ -41,12 +38,6 @@ namespace Demo
             throw new ArgumentException("Somehow ended up with the wrong type of Tiles!");
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="destination"></param>
-        /// <param name="orientation"></param>
         private int MoveCost(Hex source, Hex destination, int orientation)
         {
             return (source.HasRoad(orientation) && destination.Type != HexType.Blocked)
@@ -79,11 +70,6 @@ namespace Demo
             throw new ArgumentException("Somehow ended up with the wrong type of Tiles!");
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="category"></param>
-        /// <param name="from"></param>
         private int MaxRangeOfFire(int category, Hex from)
         {
             return 6 + from.RangeModifier(category);
@@ -122,15 +108,6 @@ namespace Demo
             throw new ArgumentException("Somehow ended up with the wrong type of Tiles!");
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="category"></param>
-        /// <param name="distance"></param>
-        /// <param name="source"></param>
-        /// <param name="sourceOrientation"></param>
-        /// <param name="destination"></param>
-        /// <param name="destinationOrientation"></param>
         private int VolumeOfFire(
             int category,
             int distance,

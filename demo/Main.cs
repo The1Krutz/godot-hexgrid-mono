@@ -3,9 +3,6 @@ using Array = Godot.Collections.Array;
 
 namespace Demo
 {
-    /// <summary>
-    ///
-    /// </summary>
     public class Main : Node2D
     {
         private Control _ui;
@@ -40,35 +37,22 @@ namespace Demo
             _ui.GetNode<Label>("OSInfo").Text = $"screen\n{OS.GetScreenSize()}\ndpi {OS.GetScreenDpi():F0}";
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public void OnViewportResized()
         {
             _camera.Configure(_viewport.Size, _map.Center, _map.TextureSize);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public void OnRotate()
         {
             _map.RotateMap();
             OnViewportResized();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="b"></param>
-        public void OnZoom(bool b) // TODO - figure out what this is and rename it
+        public void OnZoom(bool zoomingIn)
         {
-            _camera.UpdateCamera(0, 0, b ? -0.05f : 0.05f);
+            _camera.UpdateCamera(0, 0, zoomingIn ? -0.05f : 0.05f);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public void OnToggle()
         {
             _map.SetMode(
@@ -77,12 +61,6 @@ namespace Demo
                 _ui.GetNode<CheckBox>("Influence").Pressed);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="hex"></param>
-        /// <param name="key"></param>
         public void OnHexTouched(Vector2 position, Hex hex, int key)
         {
             string s = key == -1 ? "offmap" : hex.ToString();

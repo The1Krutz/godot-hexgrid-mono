@@ -4,9 +4,6 @@ using Godot;
 
 namespace MonoHexGrid
 {
-    /// <summary>
-    ///
-    /// </summary>
     public enum Orientation
     {
         E = 1,
@@ -19,16 +16,8 @@ namespace MonoHexGrid
         SE = 128
     }
 
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="coords"></param>
-    /// <param name="key"></param>
     public delegate Tile GetTile(Vector2 coords, int key);
 
-    /// <summary>
-    ///
-    /// </summary>
     public class HexBoard : Node
     {
         public int Size => ((int)_columnRow.y / 2 * _tl) + ((int)_columnRow.y % 2 * (int)_columnRow.x);
@@ -53,15 +42,6 @@ namespace MonoHexGrid
         private int _tl; // num of hexes in 2 consecutives rows
         private int _searchCount;
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="cols"></param>
-        /// <param name="rows"></param>
-        /// <param name="side"></param>
-        /// <param name="v0"></param>
-        /// <param name="hasVerticalEdge"></param>
-        /// <param name="tileFactory"></param>
         public HexBoard(
             int cols,
             int rows,
@@ -252,11 +232,6 @@ namespace MonoHexGrid
                 : Key((int)coordinates.y, (int)coordinates.x);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
         private int Key(int x, int y)
         {
             int n = y / 2;
@@ -290,11 +265,6 @@ namespace MonoHexGrid
                 : IsOnMap((int)coordinates.y, (int)coordinates.x);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
         private bool IsOnMap(int x, int y)
         {
             if ((y < 0) || (y >= (int)_columnRow.y))
@@ -322,20 +292,14 @@ namespace MonoHexGrid
         /// <summary>
         /// compute the col;row coordinates of a Tile given it's real coordinates
         /// </summary>
-        /// <param name="r"></param>
-        public Vector2 ToMap(Vector2 r) // TODO - figure out what this is and rename it
+        /// <param name="position"></param>
+        public Vector2 ToMap(Vector2 position)
         {
             return HasVerticalEdge
-                ? ToMap(r.x, r.y, false)
-                : ToMap(r.y, r.x, true);
+                ? ToMap(position.x, position.y, false)
+                : ToMap(position.y, position.x, true);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="swap"></param>
         private Vector2 ToMap(float x, float y, bool swap)
         {
             // compute row
@@ -604,13 +568,6 @@ namespace MonoHexGrid
             return tiles.Count;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="piece"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="tiles"></param>
         public int ShortestPath(Piece piece, Tile from, Tile to, List<Tile> tiles)
         {
             tiles.Clear();
@@ -704,13 +661,6 @@ namespace MonoHexGrid
             return tiles.Count;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="piece"></param>
-        /// <param name="from"></param>
-        /// <param name="category"></param>
-        /// <param name="tiles"></param>
         public int RangeOfInfluence(Piece piece, Tile from, int category, List<Tile> tiles)
         {
             tiles.Clear();
@@ -780,14 +730,6 @@ namespace MonoHexGrid
             return _adjacents;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="p0"></param>
-        /// <param name="p1"></param>
-        /// <param name="flat"></param>
-        /// <param name="q13"></param>
-        /// <param name="tiles"></param>
         private Vector2 DiagonalLineOfSight(Vector2 p0, Vector2 p1, bool flat, bool q13, List<Tile> tiles)
         {
             int dy = (p1.y > p0.y) ? 1 : -1;
@@ -879,12 +821,6 @@ namespace MonoHexGrid
             return ret;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="dx"></param>
-        /// <param name="dy"></param>
-        /// <param name="flat"></param>
         private int ComputeOrientation(int dx, int dy, bool flat)
         {
             if (flat)
@@ -913,13 +849,6 @@ namespace MonoHexGrid
             return (int)Orientation.W;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="t"></param>
-        /// <param name="orientation"></param>
         private Vector2 ComputeContact(Vector2 from, Vector2 to, Vector2 t, int orientation)
         {
             float dx = to.x - from.x;

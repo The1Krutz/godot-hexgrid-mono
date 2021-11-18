@@ -4,9 +4,6 @@ using MonoHexGrid;
 
 namespace Demo
 {
-    /// <summary>
-    ///
-    /// </summary>
     public class Map : Sprite
     {
         [Signal]
@@ -62,9 +59,6 @@ namespace Demo
             RotateMap();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public void Reset()
         {
             _losTiles.Clear();
@@ -86,9 +80,6 @@ namespace Demo
             Compute();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public void RotateMap()
         {
             Texture = GD.Load<Texture>(IsInstanceValid(_board) && _board.HasVerticalEdge
@@ -98,12 +89,6 @@ namespace Demo
             Reset();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="showLos"></param>
-        /// <param name="showMove"></param>
-        /// <param name="showInfluence"></param>
         public void SetMode(bool showLos, bool showMove, bool showInfluence)
         {
             _showLos = showLos;
@@ -112,9 +97,6 @@ namespace Demo
             Compute();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public void Configure()
         {
             bool v = IsInstanceValid(_board) && _board.HasVerticalEdge;
@@ -144,9 +126,6 @@ namespace Demo
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public void OnMouseMove()
         {
             if (_drag != null)
@@ -155,10 +134,6 @@ namespace Demo
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="pressed"></param>
         public bool OnClick(bool pressed)
         {
             Vector2 pos = GetLocalMousePosition();
@@ -209,11 +184,6 @@ namespace Demo
             return false;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="coordinates"></param>
-        /// <param name="position"></param>
         public void ChangeTile(Vector2 coordinates, Vector2 position)
         {
             Hex hex = (Hex)_board.GetTile(coordinates);
@@ -222,11 +192,6 @@ namespace Demo
             Compute();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="coordinates"></param>
-        /// <param name="key"></param>
         public Tile GetTile(Vector2 coordinates, int key)
         {
             if (_mapHexes.ContainsKey(key))
@@ -258,10 +223,6 @@ namespace Demo
             return hex;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="key"></param>
         public int GetRoad(int key)
         {
             if (!_board.HasVerticalEdge)
@@ -290,11 +251,6 @@ namespace Demo
             return v;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <param name="coords"></param>
         public void Notify(Vector2 pos, Vector2 coords)
         {
             EmitSignal(
@@ -304,9 +260,6 @@ namespace Demo
                 _board.IsOnMap(coords) ? _board.Key(coords) : -1);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public void Compute()
         {
             _los.Visible = false;
@@ -330,7 +283,7 @@ namespace Demo
             }
             foreach (Hex hex in _movePathTiles)
             {
-                hex.ShowShort(false);
+                hex.ShowMovementPath(false);
             }
             if (_showMove)
             {
@@ -342,7 +295,7 @@ namespace Demo
                 }
                 foreach (Hex hex in _movePathTiles)
                 {
-                    hex.ShowShort(true);
+                    hex.ShowMovementPath(true);
                 }
             }
             foreach (Hex hex in _influenceTiles)

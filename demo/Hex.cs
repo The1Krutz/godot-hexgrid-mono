@@ -4,9 +4,6 @@ using MonoHexGrid;
 
 namespace Demo
 {
-    /// <summary>
-    ///
-    /// </summary>
     public enum HexType
     {
         Plain = -1,
@@ -16,9 +13,6 @@ namespace Demo
         Blocked = 3
     }
 
-    /// <summary>
-    ///
-    /// </summary>
     public class Hex : Tile
     {
         public HexType Type { get; set; } = HexType.Plain;
@@ -29,9 +23,6 @@ namespace Demo
             Type = HexType.Plain;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public override string ToString()
         {
             string s = Enum.GetName(typeof(HexType), Type);
@@ -68,7 +59,8 @@ namespace Demo
         }
 
         /// <summary>
-        ///
+        /// is the line of sight blocked from a Tile to another, d beeing the distance between from and
+        /// to, dt beeing the distance between from and this Tile
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
@@ -90,9 +82,6 @@ namespace Demo
             return (h * distance / distanceThis) >= to.Elevation() - e;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public void Change()
         {
             Type = (HexType)((((int)Type + 2) % 5) - 1);
@@ -102,9 +91,6 @@ namespace Demo
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public int Cost()
         {
             switch (Type)
@@ -118,9 +104,6 @@ namespace Demo
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public int Height()
         {
             switch (Type)
@@ -135,38 +118,21 @@ namespace Demo
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public int Elevation()
         {
             return Type == HexType.Mountain ? 3 : 0;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="category"></param>
         public int RangeModifier(int category)
         {
             return Type == HexType.Mountain ? 1 : 0;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="category"></param>
-        /// <param name="orientation"></param>
         public int AttackModifier(int category, int orientation)
         {
             return Type == HexType.Wood ? 2 : 0;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="category"></param>
-        /// <param name="orientation"></param>
         public int DefenseValue(int category, int orientation)
         {
             switch (Type)
@@ -181,13 +147,9 @@ namespace Demo
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="b"></param>
-        public void ShowLos(bool b) // TODO - figure out what this is and rename it
+        public void ShowLos(bool turnLosOn)
         {
-            if (b)
+            if (turnLosOn)
             {
                 EnableOverlay(IsBlocked ? 2 : 1, true);
             }
@@ -198,33 +160,21 @@ namespace Demo
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="b"></param>
-        public void ShowMove(bool b) // TODO - figure out what this is and rename it
+        public void ShowMove(bool turnMoveOn)
         {
-            EnableOverlay(7, b);
+            EnableOverlay(7, turnMoveOn);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="b"></param>
-        public void ShowShort(bool b) // TODO - figure out what this is and rename it
+        public void ShowMovementPath(bool turnMovePathOn)
         {
-            EnableOverlay(8, b);
+            EnableOverlay(8, turnMovePathOn);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="b"></param>
-        public void ShowInfluence(bool b) // TODO - figure out what this is and rename it
+        public void ShowInfluence(bool turnInfluenceOn)
         {
             Sprite s = GetChild<Sprite>(0);
             s.Modulate = new Color(F / 10.0f, 0.0f, 0.0f);
-            EnableOverlay(0, b);
+            EnableOverlay(0, turnInfluenceOn);
         }
     }
 }

@@ -2,9 +2,6 @@ using Godot;
 
 namespace MonoHexGrid
 {
-    /// <summary>
-    ///
-    /// </summary>
     public abstract class Piece : Node2D
     {
         /// <summary>

@@ -3,9 +3,6 @@ using Godot;
 
 namespace MonoHexGrid
 {
-    /// <summary>
-    ///
-    /// </summary>
     public abstract class Tile : Node2D
     {
         public Vector2 Coordinates { get; set; }
@@ -14,15 +11,9 @@ namespace MonoHexGrid
         public bool IsOnMap { get; set; }
         public bool HasRoadMarchBonus { get; set; }
         public int SearchCount { get; set; }
-        public int Acc { get; set; } // TODO - figure out what this is and rename it
-        public float F { get; set; } // TODO - figure out what this is and rename it
+        public int Acc { get; set; }
+        public float F { get; set; }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="position">Position in pixels</param>
-        /// <param name="coordinates">Grid coordinates for the hex</param>
-        /// <param name="o"></param>
         public void Configure(Vector2 position, Vector2 coordinates, List<string> o)
         {
             Position = position;
@@ -41,11 +32,6 @@ namespace MonoHexGrid
             Visible = false;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="visibility"></param>
         public void EnableOverlay(int index, bool visibility)
         {
             GetChild<Node2D>(index).Visible = visibility;
@@ -67,10 +53,6 @@ namespace MonoHexGrid
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="index"></param>
         public bool IsOverlayOn(int index)
         {
             return GetChild<Node2D>(index).Visible;
